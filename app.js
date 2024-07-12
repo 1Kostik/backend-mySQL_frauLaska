@@ -1,12 +1,21 @@
-// require("dotenv").config();
-// const path = require("path");
-// const mysql = require("mysql");
+require("dotenv").config();
+const path = require("path");
 
-// const express = require("express");
-// const cors = require("cors");
-// const app = express();
+const express = require("express");
+const cors = require("cors");
+const app = express();
 
-// app.use(cors());
+const productsRouter = require("./routes/api/products");
+const categoriesRouter = require("./routes/api/categories");
+
+app.use(cors());
+app.use(express.json());
+
+app.use("/api", productsRouter);
+app.use("/api", categoriesRouter);
+
+module.exports = app;
+
 // const db = mysql.createConnection({
 //   host: "MySQL-8.2",
 //   user: "root",
@@ -78,4 +87,3 @@
 //   const { status = 500, message = "Server error" } = err;
 //   res.status(status).json({ message });
 // });
-// module.exports = app;
