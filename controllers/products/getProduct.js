@@ -1,36 +1,38 @@
 const db = require("../../db");
 
-const getAllProducts = async () => {
+const getProduct = async (req, res, next) => {
+  const { id } = req.params;
   try {
-    const products = await getProducts();
-    const productDataPromises = products.map(async (product) => {
-      const images = await getImages(product.id);
-      const volumes = await getVolumes(product.id);
-      const colors = await getColors(product.id);
-      return {
-        ...product,
-        imageUrls: images.map(item => item),
-        volumes: volumes,
-        colors: colors.map(item => item),
-      };
+    const product = await fetchProduct(id);
+    const images = await getImages(id);
+    const volumes = await getVolumes(id);
+    const colors = await getColors(id);
+
+    res.json({
+      status: "success",
+      code: 200,
+      data: {
+        productData: {
+          ...product[0],
+          imageUrls: images,
+          volumes,
+          colors,
+        },
+      },
     });
-    const productData = await Promise.all(productDataPromises);
-    return productData;
   } catch (error) {
-    throw new Error(error.message);
+    res.status(500).json({ error: error.message });
   }
 };
-
-const getProducts = async () => {
+const fetchProduct = async (id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM products`;
-    db.query(sql, (err, data) => {
+    const sql = `SELECT * FROM products WHERE id = ?`;
+    db.query(sql, [id], (err, data) => {
       if (err) return reject(err);
       resolve(data);
     });
   });
 };
-
 const getImages = async (product_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT img_url,id FROM imageUrls WHERE product_id = ?`;
@@ -40,7 +42,6 @@ const getImages = async (product_id) => {
     });
   });
 };
-
 const getVolumes = async (product_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT size, price,id FROM volumes WHERE product_id = ?`;
@@ -50,7 +51,6 @@ const getVolumes = async (product_id) => {
     });
   });
 };
-
 const getColors = async (product_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT color,id FROM colors WHERE product_id = ?`;
@@ -60,5 +60,4 @@ const getColors = async (product_id) => {
     });
   });
 };
-
-module.exports = getAllProducts;
+module.exports = getProduct;

@@ -10,7 +10,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "your_folder_name", 
+    folder: "your_folder_name",
     allowedFormats: ["jpg", "png"],
   },
 });
@@ -25,4 +25,4 @@ const uploadPhoto = (req, res, next) => {
   });
 };
 
-module.exports= uploadPhoto;
+module.exports = uploadPhoto;

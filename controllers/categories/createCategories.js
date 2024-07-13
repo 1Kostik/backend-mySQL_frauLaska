@@ -1,4 +1,4 @@
-const db = require('../../db');
+const db = require("../../db");
 
 const createCategories = async (req, res, next) => {
   const { title } = req.body;
@@ -6,7 +6,7 @@ const createCategories = async (req, res, next) => {
   const selectSql = `SELECT * FROM categories`;
 
   try {
-    await executeQuery(insertSql, [title]); 
+    await executeQuery(insertSql, [title]);
 
     const categories = await executeQuery(selectSql);
 
@@ -33,26 +33,3 @@ const executeQuery = (sql, params) => {
 };
 
 module.exports = createCategories;
-
-
-// const db = require('../../db');
-
-// const createCategories = async (req, res, next) => {
-//   const { title } = req.body;
-//   const sql = `INSERT INTO categories (title) VALUES(?)`;
-
-//   db.query(sql, [title], (err, data) => {
-//     if (err) {
-//       console.error("Error executing query:", err);
-//       return res.status(500).json(err);
-//     }
-//     return res.status(201).json({
-//       status: "success",
-//       code: 200,
-//       data: { 
-//         data
-//        },
-//     });
-//   });
-// };
-// module.exports = createCategories;

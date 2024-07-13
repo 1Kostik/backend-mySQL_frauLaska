@@ -7,9 +7,17 @@ const {
 
 const {
   createProducts,
-  getAllProducts,
+  getProduct,
+  getAllProductsHandler,
   updateProducts,
   deleteProducts,
+  updateImages,
+  deleteImages,
+  updateVolumes,
+  deleteVolumes,
+  updateColors,
+  deleteColors,
+  upload,
 } = require("./products");
 
 const {
@@ -25,11 +33,19 @@ module.exports = {
   deletePhoto,
   deletePhotos,
   createProducts,
-  getAllProducts,
+  getProduct,
+  getAllProductsHandler,
   updateProducts,
   deleteProducts,
   createCategories,
   getCategories,
   updateCategories,
   deleteCategories,
+  updateImages,
+  deleteImages,
+  updateVolumes,
+  deleteVolumes,
+  updateColors,
+  deleteColors,
+  upload,
 };
