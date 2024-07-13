@@ -1,7 +1,8 @@
 const db = require("../../db");
 
 const updateCategories = async (req, res, next) => {
-  const { id, title } = req.body;
+  const {  title } = req.body;
+  const {id}=req.params;
   const updateSql = `UPDATE categories SET title = ? WHERE id = ?`;
   const selectSql = `SELECT * FROM categories`;
 

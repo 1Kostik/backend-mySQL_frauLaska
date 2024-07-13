@@ -1,7 +1,7 @@
 const db = require("../../db");
 
 const deleteCategories = async (req, res, next) => {
-  const { id: categoryId } = req.body; 
+  const { id: categoryId } = req.params; 
   const selectSql = `SELECT * FROM categories`;
   const deletePhotosQuery = `
   DELETE FROM imageUrls
