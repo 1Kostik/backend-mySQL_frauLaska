@@ -4,14 +4,11 @@ const {
   createProducts,
   getProduct,
   getAllProductsHandler,
-  updateProducts,
-  updateImages,
+  updateProducts, 
   deleteProducts,
   deleteImages,
-  updateVolumes,
-  deleteVolumes,
-  updateColors,
-  deleteColors,
+  deleteVariations, 
+  deleteFeedbacks,
   upload,
 } = require("../../controllers");
 
@@ -20,12 +17,9 @@ const router = express.Router();
 router.get("/products/:id", getProduct);
 router.get("/products", getAllProductsHandler);
 router.post("/products", upload.array("imageUrls"), createProducts);
-router.patch("/products/:id", updateProducts);
-router.patch("/products/images/:id", updateImages);
-router.patch("/products/volumes/:id", updateVolumes);
-router.patch("/products/colors/:id", updateColors);
-router.delete("/products/colors/:id", deleteColors);
-router.delete("/products/volumes/:id", deleteVolumes);
+router.patch("/products/:id",upload.array("imageUrls"), updateProducts);
+router.delete("/products/feedbacks/:id", deleteFeedbacks);
+router.delete("/products/variations/:id", deleteVariations);
 router.delete("/products/images/:id", deleteImages);
 router.delete("/products/:id", deleteProducts);
 

@@ -1,5 +1,5 @@
 const db = require("../../db");
-const getAllProducts = require("./getAllProducts");
+const { getAllProducts } = require("./getAllProducts");
 const multer = require("multer");
 const cloudinary = require("../../cloudinaryConfig");
 
@@ -11,8 +11,6 @@ const saveTableProduct = async (data) => {
     category_id,
     title,
     description,
-    discount,
-    stockCount,
     ranking,
     benefit,
     popularity,
@@ -20,16 +18,14 @@ const saveTableProduct = async (data) => {
     composition,
   } = data;
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO products (category_id, title, description, discount, stockCount, ranking, benefit, popularity, productCode, composition)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     db.query(
       sql,
       [
         category_id,
         title,
         description,
-        discount,
-        stockCount,
         ranking,
         benefit,
         popularity,
@@ -89,23 +85,19 @@ const createProducts = async (req, res, next) => {
     category_id,
     title,
     description,
-    discount,
-    stockCount,
     ranking,
     benefit,
     popularity,
     productCode,
     composition,
-    volumes,
-    colors,
+    variations,
+    feedbacks,
   } = req.body;
 
   const productData = {
     category_id,
     title,
     description,
-    discount,
-    stockCount,
     ranking,
     benefit,
     popularity,
@@ -117,6 +109,7 @@ const createProducts = async (req, res, next) => {
 
   try {
     const product_id = await saveTableProduct(productData);
+
     const folder = `products`;
 
     const uploadPromises = imageFiles.map((file) =>
@@ -131,16 +124,26 @@ const createProducts = async (req, res, next) => {
       ["img_url"],
       (url) => [product_id, url]
     );
-    await saveTableData("colors", product_id, colors, ["color"], (color) => [
-      product_id,
-      color,
-    ]);
     await saveTableData(
-      "volumes",
+      "variations",
       product_id,
-      volumes,
-      ["size", "price"],
-      (item) => [product_id, item.size, item.price]
+      variations,
+      ["price", "discount", "count", "color", "size"],
+      (item) => [
+        product_id,
+        item.price,
+        item.discount,
+        item.count,
+        item.color,
+        item.size,
+      ]
+    );
+    await saveTableData(
+      "feedbacks",
+      product_id,
+      feedbacks,
+      ["name", "profession", "review"],
+      (item) => [product_id, item.name, item.profession, item.review]
     );
 
     const allProducts = await getAllProducts();
@@ -156,4 +159,9 @@ const createProducts = async (req, res, next) => {
   }
 };
 
-module.exports = { createProducts, upload };
+module.exports = {
+  createProducts,
+  upload,
+  saveTableData,
+  uploadImageToCloudinary,
+};

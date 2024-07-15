@@ -1,22 +1,12 @@
 const {
-  uploadPhoto,
-  uploadPhotos,
-  deletePhoto,
-  deletePhotos,
-} = require("./upload");
-
-const {
   createProducts,
   getProduct,
   getAllProductsHandler,
   updateProducts,
   deleteProducts,
-  updateImages,
-  deleteImages,
-  updateVolumes,
-  deleteVolumes,
-  updateColors,
-  deleteColors,
+  deleteImages, 
+  deleteVariations, 
+  deleteFeedbacks,
   upload,
 } = require("./products");
 
@@ -27,11 +17,7 @@ const {
   deleteCategories,
 } = require("./categories");
 
-module.exports = {
-  uploadPhoto,
-  uploadPhotos,
-  deletePhoto,
-  deletePhotos,
+module.exports = { 
   createProducts,
   getProduct,
   getAllProductsHandler,
@@ -40,12 +26,9 @@ module.exports = {
   createCategories,
   getCategories,
   updateCategories,
-  deleteCategories,
-  updateImages,
-  deleteImages,
-  updateVolumes,
-  deleteVolumes,
-  updateColors,
-  deleteColors,
+  deleteCategories, 
+  deleteImages, 
+  deleteVariations,  
+  deleteFeedbacks,
   upload,
 };

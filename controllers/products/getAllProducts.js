@@ -5,13 +5,13 @@ const getAllProducts = async () => {
     const products = await getProducts();
     const productDataPromises = products.map(async (product) => {
       const images = await getImages(product.id);
-      const volumes = await getVolumes(product.id);
-      const colors = await getColors(product.id);
+      const variations = await getVariations(product.id);
+      const feedbacks = await getFeedbacks(product.id);
       return {
         ...product,
         imageUrls: images.map(item => item),
-        volumes: volumes,
-        colors: colors.map(item => item),
+        variations: variations.map(item => item),
+        feedbacks: feedbacks.map(item => item),
       };
     });
     const productData = await Promise.all(productDataPromises);
@@ -41,9 +41,9 @@ const getImages = async (product_id) => {
   });
 };
 
-const getVolumes = async (product_id) => {
+const getVariations = async (product_id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT size, price,id FROM volumes WHERE product_id = ?`;
+    const sql = `SELECT id, price,discount,count,color,size FROM variations WHERE product_id = ?`;
     db.query(sql, [product_id], (err, data) => {
       if (err) return reject(err);
       resolve(data);
@@ -51,9 +51,9 @@ const getVolumes = async (product_id) => {
   });
 };
 
-const getColors = async (product_id) => {
+const getFeedbacks = async (product_id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT color,id FROM colors WHERE product_id = ?`;
+    const sql = `SELECT id,name,profession,review FROM feedbacks WHERE product_id = ?`;
     db.query(sql, [product_id], (err, data) => {
       if (err) return reject(err);
       resolve(data);
@@ -61,4 +61,4 @@ const getColors = async (product_id) => {
   });
 };
 
-module.exports = getAllProducts;
+module.exports = {getAllProducts,getVariations,getFeedbacks,getImages};

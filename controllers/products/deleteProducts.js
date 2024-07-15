@@ -1,14 +1,14 @@
 const db = require("../../db");
 const cloudinary = require("../../cloudinaryConfig");
 
-const getAllProducts = require("./getAllProducts");
+const {getAllProducts} = require("./getAllProducts");
 
 const deleteProducts = async (req, res) => {
   const { id } = req.params;
 
-  try {
-    await deleteVolumes(id);
-    await deleteColors(id);
+  try { 
+    await deleteVariations(id);
+    await deleteFeedbacks(id);
     await deleteImageUrls(id);
     await deleteProduct(id);
 
@@ -38,12 +38,12 @@ const deleteProduct = async (id) => {
   });
 };
 
-const deleteVolumes = async (product_id) => {
-  const query = "DELETE FROM volumes WHERE product_id = ?";
+const deleteVariations = async (product_id) => {
+  const query = "DELETE FROM variations WHERE product_id = ?";
   return new Promise((resolve, reject) => {
     db.query(query, [product_id], (err, result) => {
       if (err) {
-        console.error("Error deleting volumes:", err);
+        console.error("Error deleting variations:", err);
         return reject(err);
       }
       resolve(result);
@@ -51,12 +51,12 @@ const deleteVolumes = async (product_id) => {
   });
 };
 
-const deleteColors = async (product_id) => {
-  const query = "DELETE FROM colors WHERE product_id = ?";
+const deleteFeedbacks = async (product_id) => {
+  const query = "DELETE FROM feedbacks WHERE product_id = ?";
   return new Promise((resolve, reject) => {
     db.query(query, [product_id], (err, result) => {
       if (err) {
-        console.error("Error deleting colors:", err);
+        console.error("Error deleting feedbacks:", err);
         return reject(err);
       }
       resolve(result);
