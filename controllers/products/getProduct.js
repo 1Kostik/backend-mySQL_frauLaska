@@ -5,8 +5,8 @@ const getProduct = async (req, res, next) => {
   try {
     const product = await fetchProduct(id);
     const images = await getImages(id);
-    const volumes = await getVolumes(id);
-    const colors = await getColors(id);
+    const variations = await getVariations(id);
+    const feedbacks = await getFeedbacks(id);
 
     res.json({
       status: "success",
@@ -15,8 +15,8 @@ const getProduct = async (req, res, next) => {
         productData: {
           ...product[0],
           imageUrls: images,
-          volumes,
-          colors,
+          variations,
+          feedbacks,
         },
       },
     });
@@ -42,18 +42,18 @@ const getImages = async (product_id) => {
     });
   });
 };
-const getVolumes = async (product_id) => {
+const getVariations = async (product_id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT size, price,id FROM volumes WHERE product_id = ?`;
+    const sql = `SELECT id, price,discount,count,color,size FROM variations WHERE product_id = ?`;
     db.query(sql, [product_id], (err, data) => {
       if (err) return reject(err);
       resolve(data);
     });
   });
 };
-const getColors = async (product_id) => {
+const getFeedbacks = async (product_id) => {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT color,id FROM colors WHERE product_id = ?`;
+    const sql = `SELECT id,name,profession,review FROM feedbacks WHERE product_id = ?`;
     db.query(sql, [product_id], (err, data) => {
       if (err) return reject(err);
       resolve(data);

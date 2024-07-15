@@ -1,6 +1,11 @@
 const db = require("../../db");
-const cloudinary = require("../../cloudinaryConfig");
-const getAllProducts = require("./getAllProducts");
+const {
+  getAllProducts,
+  getFeedbacks,
+  getVariations,
+} = require("./getAllProducts");
+
+const { saveTableData, uploadImageToCloudinary } = require("./createProducts");
 
 const updateProducts = async (req, res, next) => {
   const { id } = req.params;
@@ -8,16 +13,13 @@ const updateProducts = async (req, res, next) => {
     category_id,
     title,
     description,
-    discount,
-    stockCount,
     ranking,
     benefit,
     popularity,
     productCode,
     composition,
-    volumes,
-    colors,
-    imageUrls,
+    variations,
+    feedbacks,
   } = req.body;
 
   const productData = {
@@ -25,21 +27,20 @@ const updateProducts = async (req, res, next) => {
     category_id,
     title,
     description,
-    discount,
-    stockCount,
     ranking,
     benefit,
     popularity,
     productCode,
     composition,
   };
-
+  const imageFiles = req.files;
+  const product_id = id;
+  const feedbacksArray = getFeedbacks(id);
+  const variationsArray = getVariations();
   try {
     if (
       title ||
       description ||
-      discount ||
-      stockCount ||
       ranking ||
       benefit ||
       popularity ||
@@ -49,16 +50,62 @@ const updateProducts = async (req, res, next) => {
       await updateTableProduct(productData);
     }
 
-    if (imageUrls && imageUrls.length !== 0) {
-      await updateTableImages(id, imageUrls);
-    }
+    if (imageFiles && imageFiles.length > 0) {
+      const folder = `products`;
 
-    if (volumes && volumes.length !== 0) {
-      await updateTableVolumes(id, volumes);
-    }
+      const uploadPromises = imageFiles.map((file) =>
+        uploadImageToCloudinary(file, folder)
+      );
+      const imageUrls = await Promise.all(uploadPromises);
 
-    if (colors && colors.length !== 0) {
-      await updateTableColors(id, colors);
+      await saveTableData(
+        "imageUrls",
+        product_id,
+        imageUrls,
+        ["img_url"],
+        (url) => [product_id, url]
+      );
+    }
+    if (
+      variationsArray &&
+      variationsArray.length > 0 &&
+      variations &&
+      variations.length > 0 &&
+      variations.id
+    ) {
+      await updateTableVariations(id, variations);
+    } else {
+      await saveTableData(
+        "variations",
+        product_id,
+        variations,
+        ["price", "discount", "count", "color", "size"],
+        (item) => [
+          product_id,
+          item.price,
+          item.discount,
+          item.count,
+          item.color,
+          item.size,
+        ]
+      );
+    }
+    if (
+      feedbacksArray &&
+      feedbacksArray.length > 0 &&
+      feedbacks &&
+      feedbacks.length > 0 &&
+      feedbacks.id
+    ) {
+      await updateTableFeedbacks(id, feedbacks);
+    } else {
+      await saveTableData(
+        "feedbacks",
+        product_id,
+        feedbacks,
+        ["name", "profession", "review"],
+        (item) => [product_id, item.name, item.profession, item.review]
+      );
     }
     const allProducts = await getAllProducts();
     res.status(200).json({
@@ -94,27 +141,42 @@ const updateTableProduct = async (data) => {
     });
   });
 };
-const updateTableImages = async (product_id, images) => {
+
+const updateTableVariations = async (product_id, variations) => {
   return new Promise((resolve, reject) => {
     if (
       !product_id ||
-      !images ||
-      !Array.isArray(images) ||
-      images.length === 0
+      !variations ||
+      !Array.isArray(variations) ||
+      variations.length === 0
     ) {
       return reject("Invalid input");
     }
-
     const query =
-      "UPDATE imageUrls SET product_id = ?, img_url = ? WHERE id = ?";
-    const promises = images.map((image) => {
+      "UPDATE variations SET product_id = ?, price = ?, discount = ?, count = ?, color = ?, size = ? WHERE id = ?";
+    const promises = variations.map((item) => {
       return new Promise((res, rej) => {
-        if (!image.id || !image.img_url) {
+        if (
+          !item.id ||
+          !item.price ||
+          !item.discount ||
+          !item.count ||
+          !item.color ||
+          !item.size
+        ) {
           return rej("Missing required fields");
         }
         db.query(
           query,
-          [product_id, image.img_url, image.id],
+          [
+            product_id,
+            item.price,
+            item.discount,
+            item.count,
+            item.color,
+            item.size,
+            item.id,
+          ],
           (err, result) => {
             if (err) return rej(err);
             res(result);
@@ -128,59 +190,31 @@ const updateTableImages = async (product_id, images) => {
       .catch((error) => reject(error));
   });
 };
-const updateTableVolumes = async (product_id, volumes) => {
+const updateTableFeedbacks = async (product_id, feedbacks) => {
   return new Promise((resolve, reject) => {
     if (
       !product_id ||
-      !volumes ||
-      !Array.isArray(volumes) ||
-      volumes.length === 0
+      !feedbacks ||
+      !Array.isArray(feedbacks) ||
+      feedbacks.length === 0
     ) {
       return reject("Invalid input");
     }
     const query =
-      "UPDATE volumes SET product_id = ?,size = ?, price = ? WHERE id = ?";
-    const promises = volumes.map((item) => {
+      "UPDATE feedbacks SET product_id = ?, name = ?, profession = ?, review = ? WHERE id = ?";
+    const promises = feedbacks.map((item) => {
       return new Promise((res, rej) => {
-        if (!item.id || !item.size || !item.price) {
+        if (!item.id || !item.name || !item.profession || !item.review) {
           return rej("Missing required fields");
         }
         db.query(
           query,
-          [product_id, item.size, item.price, item.id],
+          [product_id, item.name, item.profession, item.review, item.id],
           (err, result) => {
-            if (err) return rej(err);
+            if (err) return reject(err);
             res(result);
           }
         );
-      });
-    });
-
-    Promise.all(promises)
-      .then((results) => resolve(results))
-      .catch((error) => reject(error));
-  });
-};
-const updateTableColors = async (product_id, colors) => {
-  return new Promise((resolve, reject) => {
-    if (
-      !product_id ||
-      !colors ||
-      !Array.isArray(colors) ||
-      colors.length === 0
-    ) {
-      return reject("Invalid input");
-    }
-    const query = "UPDATE colors SET product_id = ?, color = ?  WHERE id = ?";
-    const promises = colors.map((item) => {
-      return new Promise((res, rej) => {
-        if (!item.id || !item.color) {
-          return rej("Missing required fields");
-        }
-        db.query(query, [product_id, item.color, item.id], (err, result) => {
-          if (err) return reject(err);
-          res(result);
-        });
       });
     });
     Promise.all(promises)

@@ -1,7 +1,7 @@
 const db = require("../../db");
 const cloudinary = require("../../cloudinaryConfig");
 
-const getAllProducts = require("./getAllProducts");
+const {getAllProducts} = require("./getAllProducts");
 
 const deleteImages = async (req, res) => {
   const { id } = req.params;
