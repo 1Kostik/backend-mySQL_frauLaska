@@ -1,15 +1,9 @@
-const { getAllProducts }= require('./getAllProducts');
+const { getAllProducts } = require("./getAllProducts");
 
 const getAllProductsHandler = async (req, res, next) => {
   try {
     const productData = await getAllProducts();
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        productData,
-      },
-    });
+    res.json(productData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

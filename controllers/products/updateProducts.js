@@ -107,12 +107,8 @@ const updateProducts = async (req, res, next) => {
         (item) => [product_id, item.name, item.profession, item.review]
       );
     }
-    const allProducts = await getAllProducts();
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: { productData: allProducts },
-    });
+    const productData = await getAllProducts();
+    res.status(200).json(productData);
   } catch (error) {
     console.error("Error updating data:", error);
     res.status(500).send("Помилка при оновленні даних");

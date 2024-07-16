@@ -1,24 +1,20 @@
 const db = require("../../db");
 const cloudinary = require("../../cloudinaryConfig");
 
-const {getAllProducts} = require("./getAllProducts");
+const { getAllProducts } = require("./getAllProducts");
 
 const deleteProducts = async (req, res) => {
   const { id } = req.params;
 
-  try { 
+  try {
     await deleteVariations(id);
     await deleteFeedbacks(id);
     await deleteImageUrls(id);
     await deleteProduct(id);
 
-    const allProducts = await getAllProducts();
+    const productData = await getAllProducts();
 
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: { productData: allProducts },
-    });
+    res.status(200).json(productData);
   } catch (error) {
     console.error("Error in /deleteProductData:", error);
     res.status(500).send("Error deleting product data");

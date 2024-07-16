@@ -146,13 +146,9 @@ const createProducts = async (req, res, next) => {
       (item) => [product_id, item.name, item.profession, item.review]
     );
 
-    const allProducts = await getAllProducts();
+    const productData = await getAllProducts();
 
-    res.status(201).json({
-      status: "success",
-      code: 201,
-      data: { productData: allProducts },
-    });
+    res.status(201).json(productData);
   } catch (error) {
     console.error("Помилка при додаванні даних:", error);
     res.status(500).send("Помилка при додаванні даних");

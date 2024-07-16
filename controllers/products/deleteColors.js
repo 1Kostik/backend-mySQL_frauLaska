@@ -7,13 +7,9 @@ const deleteColors = async (req, res) => {
   try {
     await removeColors(id);
 
-    const allProducts = await getAllProducts();
+    const productData = await getAllProducts();
 
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: { productData: allProducts },
-    });
+    res.status(200).json(productData);
   } catch (error) {
     console.error("Error in /deleteProductData:", error);
     res.status(500).send("Error deleting product data");

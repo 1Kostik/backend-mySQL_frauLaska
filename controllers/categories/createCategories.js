@@ -10,13 +10,7 @@ const createCategories = async (req, res, next) => {
 
     const categories = await executeQuery(selectSql);
 
-    res.status(201).json({
-      status: "success",
-      code: 201,
-      data: {
-        categories: categories,
-      },
-    });
+    res.status(201).json(categories);
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ error: error.message });
