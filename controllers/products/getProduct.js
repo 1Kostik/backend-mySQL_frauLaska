@@ -7,19 +7,13 @@ const getProduct = async (req, res, next) => {
     const images = await getImages(id);
     const variations = await getVariations(id);
     const feedbacks = await getFeedbacks(id);
-
-    res.json({
-      status: "success",
-      code: 200,
-      data: {
-        productData: {
-          ...product[0],
-          imageUrls: images,
-          variations,
-          feedbacks,
-        },
-      },
-    });
+    const productData = {
+      ...product[0],
+      imageUrls: images,
+      variations,
+      feedbacks,
+    };
+    res.json(productData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

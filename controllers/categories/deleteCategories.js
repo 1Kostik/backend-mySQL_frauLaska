@@ -1,7 +1,7 @@
 const db = require("../../db");
 
 const deleteCategories = async (req, res, next) => {
-  const { id: categoryId } = req.params; 
+  const { id: categoryId } = req.params;
   const selectSql = `SELECT * FROM categories`;
   const deletePhotosQuery = `
   DELETE FROM imageUrls
@@ -37,7 +37,6 @@ const deleteCategories = async (req, res, next) => {
 `;
 
   try {
-   
     await executeQuery(deletePhotosQuery, [categoryId]);
     await executeQuery(deleteVolumesQuery, [categoryId]);
     await executeQuery(deleteColorsQuery, [categoryId]);
@@ -46,13 +45,7 @@ const deleteCategories = async (req, res, next) => {
 
     const categories = await executeQuery(selectSql);
 
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: {
-        categories: categories,
-      },
-    });
+    res.status(200).json(categories);
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ error: error.message });

@@ -1,11 +1,12 @@
+const { login, logout } = require("./auth");
 const {
   createProducts,
   getProduct,
   getAllProductsHandler,
   updateProducts,
   deleteProducts,
-  deleteImages, 
-  deleteVariations, 
+  deleteImages,
+  deleteVariations,
   deleteFeedbacks,
   upload,
 } = require("./products");
@@ -17,7 +18,7 @@ const {
   deleteCategories,
 } = require("./categories");
 
-module.exports = { 
+module.exports = {
   createProducts,
   getProduct,
   getAllProductsHandler,
@@ -26,9 +27,11 @@ module.exports = {
   createCategories,
   getCategories,
   updateCategories,
-  deleteCategories, 
-  deleteImages, 
-  deleteVariations,  
+  deleteCategories,
+  deleteImages,
+  deleteVariations,
   deleteFeedbacks,
   upload,
+  login,
+  logout,
 };

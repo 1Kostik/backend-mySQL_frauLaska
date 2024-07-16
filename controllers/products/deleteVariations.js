@@ -1,5 +1,5 @@
 const db = require("../../db");
-const {getAllProducts} = require("./getAllProducts");
+const { getAllProducts } = require("./getAllProducts");
 
 const deleteVariations = async (req, res) => {
   const { id } = req.params;
@@ -9,11 +9,7 @@ const deleteVariations = async (req, res) => {
 
     const allProducts = await getAllProducts();
 
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: { productData: allProducts },
-    });
+    res.status(200).json(productData);
   } catch (error) {
     res.status(500).send("Error deleting variations data");
   }
