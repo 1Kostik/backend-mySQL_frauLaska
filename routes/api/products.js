@@ -4,10 +4,10 @@ const {
   createProducts,
   getProduct,
   getAllProductsHandler,
-  updateProducts, 
+  updateProducts,
   deleteProducts,
   deleteImages,
-  deleteVariations, 
+  deleteVariations,
   deleteFeedbacks,
   upload,
 } = require("../../controllers");
@@ -16,11 +16,21 @@ const router = express.Router();
 
 router.get("/products/:id", getProduct);
 router.get("/products", getAllProductsHandler);
-router.post("/products", upload.array("imageUrls"), createProducts);
-router.patch("/products/:id",upload.array("imageUrls"), updateProducts);
-router.delete("/products/feedbacks/:id", deleteFeedbacks);
-router.delete("/products/variations/:id", deleteVariations);
-router.delete("/products/images/:id", deleteImages);
-router.delete("/products/:id", deleteProducts);
+router.post(
+  "/products",
+  authenticate,
+  upload.array("imageUrls"),
+  createProducts
+);
+router.patch(
+  "/products/:id",
+  authenticate,
+  upload.array("imageUrls"),
+  updateProducts
+);
+router.delete("/products/feedbacks/:id", authenticate, deleteFeedbacks);
+router.delete("/products/variations/:id", authenticate, deleteVariations);
+router.delete("/products/images/:id", authenticate, deleteImages);
+router.delete("/products/:id", authenticate, deleteProducts);
 
 module.exports = router;
