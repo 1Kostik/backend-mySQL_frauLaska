@@ -15,8 +15,8 @@ const authenticate = (req, res, next) => {
       return res.status(401).json({ message: 'Invalid token' });
     }
 
-    req.user = decoded; // добавляем данные пользователя в req.user
-    next();
+    req.user = decoded;
+    next()
   });
 };
 

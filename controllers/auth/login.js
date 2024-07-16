@@ -30,31 +30,20 @@ const login = async (req, res) => {
     throw HttpError(401, "Email or password invalid!");
   }
   const passwordCompare = await bcrypt.compare(password, user.password);
- 
+
   if (!passwordCompare) {
     throw HttpError(401, "Email or password invalid!");
   }
   const payload = { id: user.id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "1min" });
+  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "3h" });
   await userFindAndUpdateToken(user.id, token);
 
-  jwt.verify(token, SECRET_KEY, (err, decoded) => {
-    if (err) {
-      console.error('Token verification failed:', err.message);
-    } else {
-      console.log('Decoded token:', decoded);
-    }
-  });
   res.json({
-    status: "success",
-    code: 200,
     token,
-    user: {
-      name: user.name,
-    },
+    name: user.name,
   });
 };
-module.exports = {login,userFindAndUpdateToken};
+module.exports = { login, userFindAndUpdateToken };
 
 // const updatePassword = async (id,password)=>{
 //     return new Promise((resolve, reject) => {

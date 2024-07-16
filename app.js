@@ -6,14 +6,14 @@ const app = express();
 
 const productsRouter = require("./routes/api/products");
 const categoriesRouter = require("./routes/api/categories");
-const loginRouter = require("./routes/api/auth");
+const authRouter = require("./routes/api/auth");
 
 app.use(cors());
 app.use(express.json());
 
 app.use("/api", productsRouter);
 app.use("/api", categoriesRouter);
-app.use("/api", loginRouter);
+app.use("/api", authRouter);
 module.exports = app;
 
 //   res.json(err);
