@@ -18,19 +18,19 @@ router.get("/products/:id", getProduct);
 router.get("/products", getAllProductsHandler);
 router.post(
   "/products",
-  authenticate,
+
   upload.array("imageUrls"),
   createProducts
 );
 router.patch(
   "/products/:id",
-  authenticate,
+ 
   upload.array("imageUrls"),
   updateProducts
 );
-router.delete("/products/feedbacks/:id", authenticate, deleteFeedbacks);
-router.delete("/products/variations/:id", authenticate, deleteVariations);
-router.delete("/products/images/:id", authenticate, deleteImages);
-router.delete("/products/:id", authenticate, deleteProducts);
+router.delete("/products/feedbacks/:id",  deleteFeedbacks);
+router.delete("/products/variations/:id",  deleteVariations);
+router.delete("/products/images/:id",  deleteImages);
+router.delete("/products/:id",  deleteProducts);
 
 module.exports = router;
