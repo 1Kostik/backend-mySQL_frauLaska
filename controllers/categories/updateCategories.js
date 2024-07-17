@@ -1,8 +1,8 @@
 const db = require("../../db");
 
 const updateCategories = async (req, res, next) => {
-  const {  title } = req.body;
-  const {id}=req.params;
+  const { title } = req.body;
+  const { id } = req.params;
   const updateSql = `UPDATE categories SET title = ? WHERE id = ?`;
   const selectSql = `SELECT * FROM categories`;
 
@@ -11,13 +11,7 @@ const updateCategories = async (req, res, next) => {
 
     const categories = await executeQuery(selectSql);
 
-    res.status(200).json({
-      status: "success",
-      code: 200,
-      data: {
-        categories: categories,
-      },
-    });
+    res.status(200).json(categories);
   } catch (error) {
     console.error("Error executing query:", error);
     res.status(500).json({ error: error.message });
