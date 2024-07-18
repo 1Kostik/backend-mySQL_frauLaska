@@ -12,13 +12,14 @@ const saveTableProduct = async (data) => {
     title,
     description,
     ranking,
+    mainImage,
     benefit,
     popularity,
     productCode,
     composition,
   } = data;
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition)
+    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition,mainImage)
                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
     db.query(
       sql,
@@ -31,6 +32,7 @@ const saveTableProduct = async (data) => {
         popularity,
         productCode,
         composition,
+        mainImage,
       ],
       (err, result) => {
         if (err) {
@@ -87,6 +89,7 @@ const createProducts = async (req, res, next) => {
     description,
     ranking,
     benefit,
+    mainImage,
     popularity,
     productCode,
     composition,
@@ -99,6 +102,7 @@ const createProducts = async (req, res, next) => {
     title,
     description,
     ranking,
+    mainImage,
     benefit,
     popularity,
     productCode,
