@@ -36,10 +36,17 @@ const getProducts = async (
         queryParams.push(Number(categories));
       }
     }
-
-    // Добавляем поиск по названию продукта
     if (search) {
-      sql += " AND p.title LIKE ?";
+      // Приводимо пошуковий запит до нижнього регістру та видаляємо додаткові пробіли
+      search = search
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      // Приводимо назви продуктів у базі даних до нижнього регістру та видаляємо зайві пробіли
+      sql +=
+        " AND LOWER(REPLACE(REPLACE(p.title, '  ', ' '), '  ', ' ')) LIKE ?";
       queryParams.push(`%${search}%`);
     }
 
