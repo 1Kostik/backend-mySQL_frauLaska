@@ -19,8 +19,8 @@ const saveTableProduct = async (data) => {
     composition,
   } = data;
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition,mainImage)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition, mainImage)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     db.query(
       sql,
       [
