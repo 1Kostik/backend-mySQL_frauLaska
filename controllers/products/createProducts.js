@@ -65,9 +65,11 @@ const saveTableData = async (table, product_id, data, columns, mapFunc) => {
 
 const uploadImageToCloudinary = (file, folder) => {
   return new Promise((resolve, reject) => {
+    const uniqueFileName = `${file.originalname}`;
     const stream = cloudinary.uploader.upload_stream(
       {
         folder,
+        public_id: uniqueFileName.split(".")[0],
       },
       (error, result) => {
         if (error) {
