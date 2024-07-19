@@ -11,16 +11,16 @@ const deleteCategories = async (req, res, next) => {
     WHERE category_id = ?
   )
 `;
-  const deleteVolumesQuery = `
-  DELETE FROM volumes
+  const deleteVariationsQuery = `
+  DELETE FROM variations
   WHERE product_id IN (
     SELECT product_id
     FROM products
     WHERE category_id = ?
   )
 `;
-  const deleteColorsQuery = `
-  DELETE FROM colors
+  const deleteFeedbacksQuery = `
+  DELETE FROM feedbacks
   WHERE product_id IN (
     SELECT product_id
     FROM products
@@ -38,8 +38,8 @@ const deleteCategories = async (req, res, next) => {
 
   try {
     await executeQuery(deletePhotosQuery, [categoryId]);
-    await executeQuery(deleteVolumesQuery, [categoryId]);
-    await executeQuery(deleteColorsQuery, [categoryId]);
+    await executeQuery(deleteVariationsQuery, [categoryId]);
+    await executeQuery(deleteFeedbacksQuery, [categoryId]);
     await executeQuery(deleteProductsQuery, [categoryId]);
     await executeQuery(deleteCategoryQuery, [categoryId]);
 
