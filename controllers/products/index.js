@@ -2,7 +2,7 @@ const { createProducts, upload } = require("./createProducts");
 const getAllProductsHandler = require("./getAllProductsHandler");
 const updateProducts = require("./updateProducts");
 const deleteProducts = require("./deleteProducts");
-const getProduct = require("./getProduct");
+const getProductHandler = require("./getProductHandler");
 const deleteImages = require("./deleteImages");
 const deleteVariations = require("./deleteVariations");
 const deleteFeedbacks = require("./deleteFeedbacks");
@@ -12,7 +12,7 @@ module.exports = {
   getAllProductsHandler,
   updateProducts,
   deleteProducts,
-  getProduct,
+  getProductHandler,
   deleteImages,
   deleteVariations,
   deleteFeedbacks,

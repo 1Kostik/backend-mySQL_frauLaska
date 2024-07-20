@@ -1,7 +1,7 @@
 const { login, logout } = require("./auth");
 const {
   createProducts,
-  getProduct,
+  getProductHandler,
   getAllProductsHandler,
   updateProducts,
   deleteProducts,
@@ -20,7 +20,7 @@ const {
 
 module.exports = {
   createProducts,
-  getProduct,
+  getProductHandler,
   getAllProductsHandler,
   updateProducts,
   deleteProducts,

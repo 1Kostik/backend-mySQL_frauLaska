@@ -2,7 +2,7 @@ const express = require("express");
 const authenticate = require("../../middleware/aurhenticate");
 const {
   createProducts,
-  getProduct,
+  getProductHandler,
   getAllProductsHandler,
   updateProducts,
   deleteProducts,
@@ -14,7 +14,7 @@ const {
 
 const router = express.Router();
 
-router.get("/products/:id", getProduct);
+router.get("/products/:id", getProductHandler);
 router.get("/products", getAllProductsHandler);
 router.post(
   "/products",

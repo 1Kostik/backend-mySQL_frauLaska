@@ -2,6 +2,7 @@ const db = require("../../db");
 const { getAllProducts } = require("./getAllProducts");
 const multer = require("multer");
 const cloudinary = require("../../cloudinaryConfig");
+const getProduct = require("./getProduct");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -18,30 +19,67 @@ const saveTableProduct = async (data) => {
     productCode,
     composition,
   } = data;
+
+  const columns = [];
+  const values = [];
+  const placeholders = [];
+
+  if (category_id) {
+    columns.push("category_id");
+    values.push(category_id);
+    placeholders.push("?");
+  }
+  if (title) {
+    columns.push("title");
+    values.push(title);
+    placeholders.push("?");
+  }
+  if (description) {
+    columns.push("description");
+    values.push(description);
+    placeholders.push("?");
+  }
+  if (ranking) {
+    columns.push("ranking");
+    values.push(ranking);
+    placeholders.push("?");
+  }
+  if (mainImage) {
+    columns.push("mainImage");
+    values.push(mainImage);
+    placeholders.push("?");
+  }
+  if (benefit) {
+    columns.push("benefit");
+    values.push(benefit);
+    placeholders.push("?");
+  }
+  if (popularity) {
+    columns.push("popularity");
+    values.push(popularity);
+    placeholders.push("?");
+  }
+  if (productCode) {
+    columns.push("productCode");
+    values.push(productCode);
+    placeholders.push("?");
+  }
+  if (composition) {
+    columns.push("composition");
+    values.push(composition);
+    placeholders.push("?");
+  }
+
+  const sql = `INSERT INTO products (${columns.join(", ")}) VALUES (${placeholders.join(", ")})`;
+
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO products (category_id, title, description, ranking, benefit, popularity, productCode, composition, mainImage)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-    db.query(
-      sql,
-      [
-        category_id,
-        title,
-        description,
-        ranking,
-        benefit,
-        popularity,
-        productCode,
-        composition,
-        mainImage,
-      ],
-      (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-        const product_id = result.insertId;
-        resolve(product_id);
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        return reject(err);
       }
-    );
+      const product_id = result.insertId;
+      resolve(product_id);
+    });
   });
 };
 
@@ -50,10 +88,12 @@ const saveTableData = async (table, product_id, data, columns, mapFunc) => {
     if (!Array.isArray(data) || data.length === 0) {
       return resolve(`No ${table} to insert`);
     }
-    const values = data.map(mapFunc);
-    const sql = `INSERT INTO ${table} (product_id, ${columns.join(
-      ", "
-    )}) VALUES ?`;
+    const filteredData = data.filter(item => Object.values(item).some(value => value !== undefined && value !== null && value !== ''));
+    if (filteredData.length === 0) {
+      return resolve(`No ${table} to insert after filtering empty fields`);
+    }
+    const values = filteredData.map(mapFunc);
+    const sql = `INSERT INTO ${table} (product_id, ${columns.join(", ")}) VALUES ?`;
     db.query(sql, [values], (err, result) => {
       if (err) {
         return reject(err);
@@ -114,15 +154,17 @@ const createProducts = async (req, res, next) => {
   const imageFiles = req.files;
 
   try {
+    // Сохранение продукта
     const product_id = await saveTableProduct(productData);
 
+    // Загрузка изображений
     const folder = `products`;
-
     const uploadPromises = imageFiles.map((file) =>
       uploadImageToCloudinary(file, folder)
     );
     const imageUrls = await Promise.all(uploadPromises);
 
+    // Сохранение изображений, вариаций и отзывов
     await saveTableData(
       "imageUrls",
       product_id,
@@ -152,12 +194,13 @@ const createProducts = async (req, res, next) => {
       (item) => [product_id, item.name, item.profession, item.review]
     );
 
-    const newProductData = await getAllProducts();
+    // Получение полного объекта данных о новом продукте
+    const newProduct = await getProduct(product_id);
 
-    res.status(201).json(newProductData);
+    res.status(201).json(newProduct);
   } catch (error) {
-    console.error("Помилка при додаванні даних:", error);
-    res.status(500).send("Помилка при додаванні даних");
+    console.error("Ошибка при добавлении данных:", error);
+    res.status(500).send("Ошибка при добавлении данных");
   }
 };
 
