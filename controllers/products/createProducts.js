@@ -70,7 +70,9 @@ const saveTableProduct = async (data) => {
     placeholders.push("?");
   }
 
-  const sql = `INSERT INTO products (${columns.join(", ")}) VALUES (${placeholders.join(", ")})`;
+  const sql = `INSERT INTO products (${columns.join(
+    ", "
+  )}) VALUES (${placeholders.join(", ")})`;
 
   return new Promise((resolve, reject) => {
     db.query(sql, values, (err, result) => {
@@ -88,12 +90,18 @@ const saveTableData = async (table, product_id, data, columns, mapFunc) => {
     if (!Array.isArray(data) || data.length === 0) {
       return resolve(`No ${table} to insert`);
     }
-    const filteredData = data.filter(item => Object.values(item).some(value => value !== undefined && value !== null && value !== ''));
+    const filteredData = data.filter((item) =>
+      Object.values(item).some(
+        (value) => value !== undefined && value !== null && value !== ""
+      )
+    );
     if (filteredData.length === 0) {
       return resolve(`No ${table} to insert after filtering empty fields`);
     }
     const values = filteredData.map(mapFunc);
-    const sql = `INSERT INTO ${table} (product_id, ${columns.join(", ")}) VALUES ?`;
+    const sql = `INSERT INTO ${table} (product_id, ${columns.join(
+      ", "
+    )}) VALUES ?`;
     db.query(sql, [values], (err, result) => {
       if (err) {
         return reject(err);
@@ -143,10 +151,10 @@ const createProducts = async (req, res, next) => {
     category_id,
     title,
     description,
-    ranking,
+    ranking: ranking === "" ? undefined : ranking,
     mainImage,
     benefit,
-    popularity,
+    popularity: popularity === "" ? undefined : ranking,
     productCode,
     composition,
   };
@@ -180,10 +188,10 @@ const createProducts = async (req, res, next) => {
       (item) => [
         product_id,
         item.price,
-        item.discount,
-        item.count,
-        item.color,
-        item.size,
+        item.discount === "" ? undefined : item.discount,
+        item.count === "" ? undefined : item.count,
+        item.color === "" ? undefined : item.color,
+        item.size === "" ? undefined : item.size,
       ]
     );
     await saveTableData(
