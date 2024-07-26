@@ -64,9 +64,11 @@ const getProducts = async (
       sql += ` ORDER BY p.id ASC`; // Сортировка по умолчанию
     }
 
-    // Добавляем пагинацию
-    sql += ` LIMIT ? OFFSET ?`;
-    queryParams.push(limit, offset);
+    // Добавляем пагинацию, если limit и offset указаны
+    if (limit !== null && offset !== null) {
+      sql += ` LIMIT ? OFFSET ?`;
+      queryParams.push(limit, offset);
+    }
 
     db.query(sql, queryParams, (err, data) => {
       if (err) return reject(err);
@@ -81,11 +83,11 @@ const getAllProducts = async (
   itemIds = null,
   sortField = "price",
   sortOrder = "ASC",
-  limit = 12,
-  page = 1
+  limit = null,
+  page = null
 ) => {
   try {
-    const offset = (page - 1) * limit;
+    const offset = limit && page ? (page - 1) * limit : null;
     const products = await getProducts(
       categories,
       search,

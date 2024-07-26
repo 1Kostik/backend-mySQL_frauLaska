@@ -19,8 +19,12 @@ const getAllProductsHandler = async (req, res, next) => {
 
     const sortField = req.query.sortField || "price";
     const sortOrder = req.query.sortOrder || "ASC";
-    const limit = parseInt(req.query.limit) || 12;
-    const page = parseInt(req.query.page) || 1;
+    let limit = null;
+    let page = null;
+    if (req.query.limit && req.query.page) {
+      limit = parseInt(req.query.limit);
+      page = parseInt(req.query.page);
+    }
 
     const productData = await getAllProducts(
       categories,

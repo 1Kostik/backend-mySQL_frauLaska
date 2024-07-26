@@ -16,6 +16,7 @@ const {
   getCategories,
   updateCategories,
   deleteCategories,
+  getCategoriesProductCount,
 } = require("./categories");
 
 module.exports = {
@@ -34,4 +35,5 @@ module.exports = {
   upload,
   login,
   logout,
+  getCategoriesProductCount,
 };
