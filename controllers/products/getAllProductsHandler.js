@@ -25,7 +25,8 @@ const getAllProductsHandler = async (req, res, next) => {
       limit = parseInt(req.query.limit);
       page = parseInt(req.query.page);
     }
-
+console.log('categories :>> ', categories);
+console.log('itemIds :>> ', itemIds);
     const productData = await getAllProducts(
       categories,
       search,
