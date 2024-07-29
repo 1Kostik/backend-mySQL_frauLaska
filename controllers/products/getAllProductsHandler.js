@@ -1,4 +1,98 @@
-const { getAllProducts } = require("./getAllProducts");
+const { getAllProducts, getCategoryIdByProductId } = require("./getAllProducts");
+const db = require("../../db");
+
+const getCountProducts = async (categories, itemIds, search) => {
+  return new Promise(async (resolve, reject) => {
+    let totalProducts = 0;
+    const categoryItemsMap = {};
+
+    if (itemIds && itemIds.length > 0) {
+      for (const id of itemIds) {
+        const productId = Number(id);
+        try {
+          const categoryId = await getCategoryIdByProductId(productId);
+          if (categoryId) {
+            if (!categoryItemsMap[categoryId]) {
+              categoryItemsMap[categoryId] = [];
+            }
+            categoryItemsMap[categoryId].push(productId);
+          }
+        } catch (err) {
+          return reject(err);
+        }
+      }
+    }
+
+    const queries = [];
+    const queryParams = [];
+
+    if (categories && categories.length > 0) {
+      categories.forEach((category, index) => {
+        const itemsForCategory = categoryItemsMap[category] || [];
+        if (itemsForCategory.length > 0) {
+          // Если есть конкретные товары для текущей категории
+          let sql = `
+            SELECT COUNT(*) AS total_products
+            FROM products
+            WHERE category_id = ? AND id IN (${itemsForCategory.map(() => '?').join(',')})
+          `;
+          if (search) {
+            search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
+            sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
+            queryParams.push(`%${search}%`);
+          }
+          queries.push(sql);
+          queryParams.push([Number(category), ...itemsForCategory.map(id => Number(id))]);
+        } else {
+          // Если нет конкретных товаров для текущей категории, выбираем все товары
+          let sql = `
+            SELECT COUNT(*) AS total_products
+            FROM products
+            WHERE category_id = ?
+          `;
+          if (search) {
+            search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
+            sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
+            queryParams.push(`%${search}%`);
+          }
+          queries.push(sql);
+          queryParams.push([Number(category)]);
+        }
+      });
+    } else {
+      // Если категории не указаны, выбираем все продукты
+      let sql = `
+        SELECT COUNT(*) AS total_products
+        FROM products
+        WHERE 1=1
+      `;
+      if (search) {
+        search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
+        sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
+        queryParams.push(`%${search}%`);
+      }
+      queries.push(sql);
+    }
+
+    try {
+      const results = await Promise.all(
+        queries.map((query, index) => 
+          new Promise((resolve, reject) => {
+            db.query(query, queryParams[index], (err, result) => {
+              if (err) return reject(err);
+              resolve(result[0].total_products);
+            });
+          })
+        )
+      );
+
+      totalProducts = results.reduce((sum, count) => sum + count, 0);
+      resolve([{ total_products: totalProducts }]);
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
 
 const getAllProductsHandler = async (req, res, next) => {
   try {
@@ -25,8 +119,7 @@ const getAllProductsHandler = async (req, res, next) => {
       limit = parseInt(req.query.limit);
       page = parseInt(req.query.page);
     }
-console.log('categories :>> ', categories);
-console.log('itemIds :>> ', itemIds);
+
     const productData = await getAllProducts(
       categories,
       search,
@@ -36,8 +129,10 @@ console.log('itemIds :>> ', itemIds);
       limit,
       page
     );
+    const totalProducts = await getCountProducts(categories,itemIds,search);
+    const total_products = totalProducts[0].total_products;
 
-    res.json(productData);
+    res.json({ productData, total_products});
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });

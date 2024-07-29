@@ -10,6 +10,7 @@ const getCategoryIdByProductId = async (productId) => {
   });
 };
 
+
 const getProducts = async (
   categories,
   search,
@@ -18,7 +19,7 @@ const getProducts = async (
   sortOrder,
   limit,
   offset
-) => {
+) => {  
   return new Promise(async (resolve, reject) => {
     let sql = '';
     const queryParams = [];
@@ -121,22 +122,16 @@ const getProducts = async (
       queryParams.push(limit, offset);
     }
 
-    console.log("SQL:", sql);
-    console.log("Query Params:", queryParams);
+    // console.log("SQL:", sql);
+    // console.log("Query Params:", queryParams);
 
     db.query(sql, queryParams, (err, data) => {
       if (err) return reject(err);
+      
       resolve(data);
     });
   });
 };
-
-
-
-
-
-
-
 
 const getAllProducts = async (
   categories = null,
@@ -206,4 +201,4 @@ const getFeedbacks = async (product_id) => {
   });
 };
 
-module.exports = { getAllProducts, getVariations, getFeedbacks, getImages };
+module.exports = { getAllProducts, getVariations, getFeedbacks, getImages, getCategoryIdByProductId };

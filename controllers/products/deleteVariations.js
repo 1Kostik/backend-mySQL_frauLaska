@@ -9,7 +9,7 @@ const deleteVariations = async (req, res) => {
 
     const allProducts = await getAllProducts();
 
-    res.status(200).json(productData);
+    res.status(200).json(allProducts);
   } catch (error) {
     res.status(500).send("Error deleting variations data");
   }
