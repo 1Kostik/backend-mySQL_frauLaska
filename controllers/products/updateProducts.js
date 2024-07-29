@@ -21,7 +21,7 @@ const updateProducts = async (req, res, next) => {
     variations,
     feedbacks,
   } = req.body;
-  console.log("variations :>> ", variations);
+
   const productData = {
     id,
     category_id,
@@ -35,8 +35,7 @@ const updateProducts = async (req, res, next) => {
   };
   const imageFiles = req.files;
   const product_id = id;
-  const feedbacksArray = getFeedbacks(id);
-  const variationsArray = getVariations();
+;
   try {
     if (
       title ||
@@ -49,15 +48,12 @@ const updateProducts = async (req, res, next) => {
     ) {
       await updateTableProduct(productData);
     }
-
     if (imageFiles && imageFiles.length > 0) {
       const folder = `products`;
-
       const uploadPromises = imageFiles.map((file) =>
         uploadImageToCloudinary(file, folder)
       );
       const imageUrls = await Promise.all(uploadPromises);
-
       await saveTableData(
         "imageUrls",
         product_id,
@@ -66,51 +62,51 @@ const updateProducts = async (req, res, next) => {
         (url) => [product_id, url]
       );
     }
+    const idsVariations = variations.map(item => item.id).filter(Boolean);
 
-    // Remove duplicate variations based on their IDs
-    const uniqueVariations = variations.filter(
-      (v, i, arr) => arr.findIndex(t => t.id === v.id) === i
-    );
-
-    if (
-      variationsArray &&
-      variationsArray.length > 0 &&
-      uniqueVariations &&
-      uniqueVariations.length > 0
-    ) {
-      await updateTableVariations(id, uniqueVariations);
-    } else {
-      await saveTableData(
-        "variations",
-        product_id,
-        uniqueVariations,
-        ["price", "discount", "count", "color", "size"],
-        (item) => [
+    if (variations && variations.length > 0) {
+      if (idsVariations.length > 0) {
+        const variationsWithId = variations.filter(item => item.id);
+        await updateTableVariations(product_id, variationsWithId);
+      }
+    
+      const variationsWithoutId = variations.filter(item => !item.id);
+      if (variationsWithoutId.length > 0) {
+        await saveTableData(
+          "variations",
           product_id,
-          item.price,
-          item.discount,
-          item.count,
-          item.color,
-          item.size,
-        ]
-      );
+          variationsWithoutId,
+          ["price", "discount", "count", "color", "size"],
+          (item) => [
+            product_id,
+            item.price,
+            item.discount === "" ? undefined : item.discount,
+            item.count,
+            item.color,
+            item.size,
+          ]
+        );
+      }
     }
-    if (
-      feedbacksArray &&
-      feedbacksArray.length > 0 &&
-      feedbacks &&
-      feedbacks.length > 0
-    ) {
-      await updateTableFeedbacks(id, feedbacks);
-    } else {
-      await saveTableData(
-        "feedbacks",
-        product_id,
-        feedbacks,
-        ["name", "profession", "review"],
-        (item) => [product_id, item.name, item.profession, item.review]
-      );
-    }
+    const feedbackIds = feedbacks.map(item => item.id).filter(Boolean);
+
+if (feedbacks && feedbacks.length > 0) {
+  if (feedbackIds.length > 0) {
+    const feedbacksWithId = feedbacks.filter(item => item.id);
+    await updateTableFeedbacks(product_id, feedbacksWithId);
+  }
+
+  const feedbacksWithoutId = feedbacks.filter(item => !item.id);
+  if (feedbacksWithoutId.length > 0) {
+    await saveTableData(
+      "feedbacks",
+      product_id,
+      feedbacksWithoutId,
+      ["name", "profession", "review"],
+      (item) => [product_id, item.name, item.profession, item.review]
+    );
+  }
+}
     const result = await getAllProducts();
     res.status(200).json(result);
   } catch (error) {
@@ -118,7 +114,6 @@ const updateProducts = async (req, res, next) => {
     res.status(500).send("Помилка при оновленні даних");
   }
 };
-
 const updateTableProduct = async (data) => {
   return new Promise((resolve, reject) => {
     let query = "UPDATE products SET ";
@@ -149,39 +144,37 @@ const updateTableVariations = async (product_id, variations) => {
       return reject("Invalid input");
     }
 
-    const query =
-      "UPDATE variations SET product_id = ?, price = ?, count = ?, discount = ?, color = ?, size = ? WHERE id = ?";
-    
+    const query = `
+      UPDATE variations 
+      SET 
+        product_id = ?, 
+        price = ?, 
+        discount = ?, 
+        count = ?, 
+        color = ?, 
+        size = ? 
+      WHERE id = ?
+    `;
+
     const promises = variations.map((item) => {
       return new Promise((res, rej) => {
         if (!item.id || item.price === undefined || item.count === undefined) {
           console.error("Missing required fields", item);
           return rej("Missing required fields");
         }
-
-        const price = parseInt(item.price, 10);
+        const price = parseFloat(item.price);
         const count = parseInt(item.count, 10);
-        const discount = item.discount === "" ? null : parseInt(item.discount, 10);
+        const discount = item.discount === "" ? null : parseFloat(item.discount);
         const color = item.color === "" ? null : item.color;
-        const size = item.size === "" ? null : item.size;
-
-        console.log(`Updating variation with ID ${item.id}:
-          product_id: ${product_id},
-          price: ${price},
-          count: ${count},
-          discount: ${discount},
-          color: ${color},
-          size: ${size}`);
-
+        const size = item.size === "" ? null : item.size;  
         db.query(
           query,
-          [product_id, price, count, discount, color, size, item.id],
+          [product_id, price, discount, count, color, size, item.id],
           (err, result) => {
             if (err) {
               console.error("Error updating variation:", err);
               return rej(err);
-            }
-            console.log("Updated variation:", item);
+            }           
             res(result);
           }
         );
@@ -193,7 +186,6 @@ const updateTableVariations = async (product_id, variations) => {
       .catch((error) => reject(error));
   });
 };
-
 const updateTableFeedbacks = async (product_id, feedbacks) => {
   return new Promise((resolve, reject) => {
     if (
@@ -226,5 +218,4 @@ const updateTableFeedbacks = async (product_id, feedbacks) => {
       .catch((error) => reject(error));
   });
 };
-
 module.exports = updateProducts;
