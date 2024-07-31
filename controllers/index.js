@@ -18,6 +18,7 @@ const {
   deleteCategories,
   getCategoriesProductCount,
 } = require("./categories");
+const { createOrders, deleteOrder, getAllOrders, getOrderByNumber } = require("./orders");
 
 module.exports = {
   createProducts,
@@ -36,4 +37,8 @@ module.exports = {
   login,
   logout,
   getCategoriesProductCount,
+  createOrders,
+  deleteOrder,
+  getOrderByNumber,
+  getAllOrders,
 };

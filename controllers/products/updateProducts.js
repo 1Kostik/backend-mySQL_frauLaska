@@ -35,7 +35,6 @@ const updateProducts = async (req, res, next) => {
   };
   const imageFiles = req.files;
   const product_id = id;
-;
   try {
     if (
       title ||
@@ -62,15 +61,15 @@ const updateProducts = async (req, res, next) => {
         (url) => [product_id, url]
       );
     }
-    const idsVariations = variations.map(item => item.id).filter(Boolean);
+    const idsVariations = variations.map((item) => item.id).filter(Boolean);
 
     if (variations && variations.length > 0) {
       if (idsVariations.length > 0) {
-        const variationsWithId = variations.filter(item => item.id);
+        const variationsWithId = variations.filter((item) => item.id);
         await updateTableVariations(product_id, variationsWithId);
       }
-    
-      const variationsWithoutId = variations.filter(item => !item.id);
+
+      const variationsWithoutId = variations.filter((item) => !item.id);
       if (variationsWithoutId.length > 0) {
         await saveTableData(
           "variations",
@@ -88,25 +87,25 @@ const updateProducts = async (req, res, next) => {
         );
       }
     }
-    const feedbackIds = feedbacks.map(item => item.id).filter(Boolean);
+    const feedbackIds = feedbacks.map((item) => item.id).filter(Boolean);
 
-if (feedbacks && feedbacks.length > 0) {
-  if (feedbackIds.length > 0) {
-    const feedbacksWithId = feedbacks.filter(item => item.id);
-    await updateTableFeedbacks(product_id, feedbacksWithId);
-  }
+    if (feedbacks && feedbacks.length > 0) {
+      if (feedbackIds.length > 0) {
+        const feedbacksWithId = feedbacks.filter((item) => item.id);
+        await updateTableFeedbacks(product_id, feedbacksWithId);
+      }
 
-  const feedbacksWithoutId = feedbacks.filter(item => !item.id);
-  if (feedbacksWithoutId.length > 0) {
-    await saveTableData(
-      "feedbacks",
-      product_id,
-      feedbacksWithoutId,
-      ["name", "profession", "review"],
-      (item) => [product_id, item.name, item.profession, item.review]
-    );
-  }
-}
+      const feedbacksWithoutId = feedbacks.filter((item) => !item.id);
+      if (feedbacksWithoutId.length > 0) {
+        await saveTableData(
+          "feedbacks",
+          product_id,
+          feedbacksWithoutId,
+          ["name", "profession", "review"],
+          (item) => [product_id, item.name, item.profession, item.review]
+        );
+      }
+    }
     const result = await getAllProducts();
     res.status(200).json(result);
   } catch (error) {
@@ -164,9 +163,10 @@ const updateTableVariations = async (product_id, variations) => {
         }
         const price = parseFloat(item.price);
         const count = parseInt(item.count, 10);
-        const discount = item.discount === "" ? null : parseFloat(item.discount);
+        const discount =
+          item.discount === "" ? null : parseFloat(item.discount);
         const color = item.color === "" ? null : item.color;
-        const size = item.size === "" ? null : item.size;  
+        const size = item.size === "" ? null : item.size;
         db.query(
           query,
           [product_id, price, discount, count, color, size, item.id],
@@ -174,7 +174,7 @@ const updateTableVariations = async (product_id, variations) => {
             if (err) {
               console.error("Error updating variation:", err);
               return rej(err);
-            }           
+            }
             res(result);
           }
         );
