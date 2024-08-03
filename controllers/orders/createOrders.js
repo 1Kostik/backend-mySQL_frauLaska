@@ -48,7 +48,7 @@ const saveTableDataOrders = (
           resolve(result);
         });
       });
-      console.log('result :>> ', result);
+
       resolve(result.insertId);
     } catch (error) {
       console.error("Error during database operation", error);
@@ -57,7 +57,13 @@ const saveTableDataOrders = (
   });
 };
 
-const saveTableDataOrderItems = (tableName, data, orderId, columns, mapFunc) => {
+const saveTableDataOrderItems = (
+  tableName,
+  data,
+  orderId,
+  columns,
+  mapFunc
+) => {
   return new Promise(async (resolve, reject) => {
     if (!Array.isArray(data) || data.length === 0) {
       return reject(`No ${tableName} to insert`);
@@ -73,7 +79,7 @@ const saveTableDataOrderItems = (tableName, data, orderId, columns, mapFunc) => 
       return reject(`No ${tableName} to insert after filtering empty fields`);
     }
 
-    const values = filteredData.map(item => {
+    const values = filteredData.map((item) => {
       const mappedValues = mapFunc(item);
       return [...mappedValues, orderId]; // Добавляем orderId к значениям
     });
@@ -100,7 +106,6 @@ const saveTableDataOrderItems = (tableName, data, orderId, columns, mapFunc) => 
     }
   });
 };
-
 
 const createOrders = async (req, res) => {
   const {
@@ -179,7 +184,7 @@ const createOrders = async (req, res) => {
         item.product_code,
       ]
     );
-       
+
     const result = await getOrderByNumber(orderId);
     res.status(201).json(result);
   } catch (error) {
