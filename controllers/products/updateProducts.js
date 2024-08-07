@@ -87,7 +87,7 @@ const updateProducts = async (req, res, next) => {
         );
       }
     }
-    const feedbackIds = feedbacks.map((item) => item.id).filter(Boolean);
+    const feedbackIds = feedbacks ? feedbacks.map((item) => item.id).filter(Boolean):null;
 
     if (feedbacks && feedbacks.length > 0) {
       if (feedbackIds.length > 0) {
