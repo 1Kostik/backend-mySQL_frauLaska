@@ -22,8 +22,8 @@ const {
   createOrders,
   deleteOrder,
   getAllOrders,
-  getOrderByNumber,
   makePayment,
+  getOrderHandler,
 } = require("./orders");
 
 module.exports = {
@@ -45,7 +45,7 @@ module.exports = {
   getCategoriesProductCount,
   createOrders,
   deleteOrder,
-  getOrderByNumber,
+  getOrderHandler,
   getAllOrders,
   makePayment,
 };

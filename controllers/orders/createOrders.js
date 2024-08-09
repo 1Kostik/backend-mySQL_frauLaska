@@ -1,5 +1,5 @@
 const db = require("../../db");
-const getOrderByNumber = require("./getOrders");
+const getOrderById = require("./getOrdersById");
 
 const saveTableDataOrders = (
   tableName,
@@ -203,7 +203,7 @@ const createOrders = async (req, res) => {
       ]
     );
 
-    const result = await getOrderByNumber(orderId);
+    const result = await getOrderById(orderId);
     res.status(201).json(result);
   } catch (error) {
     console.error("Ошибка при добавлении данных:", error);

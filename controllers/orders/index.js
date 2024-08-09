@@ -1,11 +1,13 @@
-const createOrders=require('./createOrders');
-const deleteOrder = require('./deleteOrders');
-const makePayment = require('./makePayment');
-const { getAllOrders, getOrderByNumber } = require('./getOrdersAndById');
+const createOrders = require("./createOrders");
+const deleteOrder = require("./deleteOrders");
+const makePayment = require("./makePayment");
+const { getAllOrders } = require("./getOrders");
+const getOrderHandler = require("./getOrderHandler");
+
 module.exports = {
   createOrders,
   deleteOrder,
-  getOrderByNumber,
+  getOrderHandler,
   getAllOrders,
   makePayment,
 };
