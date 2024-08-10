@@ -11,6 +11,8 @@ const authRouter = require("./routes/api/auth");
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 
 app.use("/api", productsRouter);
 app.use("/api", categoriesRouter);

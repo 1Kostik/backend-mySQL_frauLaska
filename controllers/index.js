@@ -22,8 +22,10 @@ const {
   createOrders,
   deleteOrder,
   getAllOrders,
-  makePayment,
   getOrderHandler,
+  updateOrder,
+  makePayment,
+  liqpayCallback,
 } = require("./orders");
 
 module.exports = {
@@ -47,5 +49,7 @@ module.exports = {
   deleteOrder,
   getOrderHandler,
   getAllOrders,
+  updateOrder,
   makePayment,
+  liqpayCallback,
 };
