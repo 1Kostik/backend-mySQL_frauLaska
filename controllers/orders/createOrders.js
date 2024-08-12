@@ -170,7 +170,7 @@ const createOrders = async (req, res) => {
       (item) => [
         item.status,
         item.payment_status,
-        item.payment_status,
+        item.payment_method,
         item.delivery_type,
         item.post_office_number,
         item.total_amount,
