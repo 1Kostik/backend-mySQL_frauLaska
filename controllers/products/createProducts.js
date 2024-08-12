@@ -13,10 +13,10 @@ const saveTableProduct = async (data) => {
     title,
     description,
     ranking,
-    mainImage,
+    main_image,
     benefit,
     popularity,
-    productCode,
+    product_code,
     composition,
   } = data;
 
@@ -44,9 +44,9 @@ const saveTableProduct = async (data) => {
     values.push(ranking);
     placeholders.push("?");
   }
-  if (mainImage) {
-    columns.push("mainImage");
-    values.push(mainImage);
+  if (main_image) {
+    columns.push("main_image");
+    values.push(main_image);
     placeholders.push("?");
   }
   if (benefit) {
@@ -59,9 +59,9 @@ const saveTableProduct = async (data) => {
     values.push(popularity);
     placeholders.push("?");
   }
-  if (productCode) {
-    columns.push("productCode");
-    values.push(productCode);
+  if (product_code) {
+    columns.push("product_code");
+    values.push(product_code);
     placeholders.push("?");
   }
   if (composition) {
@@ -139,9 +139,9 @@ const createProducts = async (req, res, next) => {
     description,
     ranking,
     benefit,
-    mainImage,
+    main_image,
     popularity,
-    productCode,
+    product_code,
     composition,
     variations,
     feedbacks,
@@ -152,10 +152,10 @@ const createProducts = async (req, res, next) => {
     title,
     description,
     ranking: ranking === "" ? undefined : ranking,
-    mainImage,
+    main_image,
     benefit,
     popularity: popularity === "" ? undefined : ranking,
-    productCode,
+    product_code,
     composition,
   };
 

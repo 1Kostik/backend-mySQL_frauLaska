@@ -16,7 +16,7 @@ const updateProducts = async (req, res, next) => {
     ranking,
     benefit,
     popularity,
-    productCode,
+    product_code,
     composition,
     variations,
     feedbacks,
@@ -30,7 +30,7 @@ const updateProducts = async (req, res, next) => {
     ranking,
     benefit,
     popularity,
-    productCode,
+    product_code,
     composition,
   };
   const imageFiles = req.files;
@@ -42,7 +42,7 @@ const updateProducts = async (req, res, next) => {
       ranking ||
       benefit ||
       popularity ||
-      productCode ||
+      product_code ||
       composition
     ) {
       await updateTableProduct(productData);
