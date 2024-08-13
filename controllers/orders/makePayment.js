@@ -1,4 +1,5 @@
 const LiqPay = require("liqpayjs-sdk");
+const getProduct = require("../products/getProduct");
 
 const { PRIVATE_KEY, PUBLIC_KEY } = process.env;
 

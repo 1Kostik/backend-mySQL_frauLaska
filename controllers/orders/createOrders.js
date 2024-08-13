@@ -1,4 +1,5 @@
 const db = require("../../db");
+const getProduct = require("../products/getProduct");
 const getOrderById = require("./getOrdersById");
 
 const saveTableDataOrders = (
@@ -117,13 +118,9 @@ const saveTableDataOrderItems = (
 
 const createOrders = async (req, res) => {
   const {
-    status,
-    payment_status,
     payment_method,
     delivery_type,
     post_office_number,
-    total_amount,
-    order_date,
     name,
     last_name,
     email,
@@ -131,90 +128,139 @@ const createOrders = async (req, res) => {
     recipient_name,
     recipient_last_name,
     recipient_phone,
-    order_items,
+    order_items: orderItems,
   } = req.body;
 
-  try {
-    const orderId = await saveTableDataOrders(
-      "orders",
-      status,
-      payment_status,
-      payment_method,
-      delivery_type,
-      post_office_number,
-      total_amount,
-      order_date,
-      name,
-      last_name,
-      email,
-      phone,
-      recipient_name,
-      recipient_last_name,
-      recipient_phone,
-      [
-        "status",
-        "payment_status",
-        "payment_method",
-        "delivery_type",
-        "post_office_number",
-        "total_amount",
-        "order_date",
-        "name",
-        "last_name",
-        "email",
-        "phone",
-        "recipient_name",
-        "recipient_last_name",
-        "recipient_phone",
-      ],
-      (item) => [
-        item.status,
-        item.payment_status,
-        item.payment_method,
-        item.delivery_type,
-        item.post_office_number,
-        item.total_amount,
-        item.order_date,
-        item.name,
-        item.last_name,
-        item.email,
-        item.phone,
-        item.recipient_name,
-        item.recipient_last_name,
-        item.recipient_phone,
-      ]
+  const pickedItems = async (orderItems) => {
+    const products = await Promise.all(
+      orderItems.map(async (item) => {
+        const product = await getProduct(item.product_id);
+        return product;
+      })
     );
+    return products;
+  };
 
-    await saveTableDataOrderItems(
-      "order_items",
-      order_items,
-      orderId, // Передаем orderId
-      [
-        "product_id",
-        "title",
-        "count",
-        "total_cost",
-        "color",
-        "size",
-        "product_code",
-      ],
-      (item) => [
-        item.product_id,
-        item.title,
-        item.count,
-        item.total_cost,
-        item.color,
-        item.size,
-        item.product_code,
-      ]
-    );
+  pickedItems(orderItems).then(async (items) => {
+    const order_item_array = items.map((item, i) => {
+      const { id, product_code, title } = item;
+      const item_variation = item.variations.find(
+        (variation) =>
+          variation.size === orderItems[i].size &&
+          variation.color === orderItems[i].color
+      );
+      const { price, discount } = item_variation;
+      const total_cost =
+        Math.round(price - (price * discount) / 100) * orderItems[i].count;
+      return {
+        product_id: id,
+        product_code,
+        title,
+        total_cost,
+        color: orderItems[i].color,
+        size: orderItems[i].size,
+        count: orderItems[i].count,
+      };
+    });
+    const total = order_item_array.reduce((acc, item) => {
+      return item.total_cost + acc;
+    }, 0);
 
-    const result = await getOrderById(orderId);
-    res.status(201).json(result);
-  } catch (error) {
-    console.error("Ошибка при добавлении данных:", error);
-    res.status(500).send("Ошибка при добавлении данных");
-  }
+    const date = new Date();
+    const offset = date.getTimezoneOffset() * 60000;
+    const order_date = new Date(date.getTime() - offset)
+      .toISOString()
+      .split(".")[0];
+
+    const order = {
+      status: "В очікуванні",
+      payment_status: "Не сплачено",
+      total_amount: total,
+      order_items: order_item_array,
+    };
+    const { status, payment_status, total_amount, order_items } = order;
+    try {
+      const orderId = await saveTableDataOrders(
+        "orders",
+        status,
+        payment_status,
+        payment_method,
+        delivery_type,
+        post_office_number,
+        total_amount,
+        order_date,
+        name,
+        last_name,
+        email,
+        phone,
+        recipient_name,
+        recipient_last_name,
+        recipient_phone,
+        [
+          "status",
+          "payment_status",
+          "payment_method",
+          "delivery_type",
+          "post_office_number",
+          "total_amount",
+          "order_date",
+          "name",
+          "last_name",
+          "email",
+          "phone",
+          "recipient_name",
+          "recipient_last_name",
+          "recipient_phone",
+        ],
+        (item) => [
+          item.status,
+          item.payment_status,
+          item.payment_method,
+          item.delivery_type,
+          item.post_office_number,
+          item.total_amount,
+          item.order_date,
+          item.name,
+          item.last_name,
+          item.email,
+          item.phone,
+          item.recipient_name,
+          item.recipient_last_name,
+          item.recipient_phone,
+        ]
+      );
+
+      await saveTableDataOrderItems(
+        "order_items",
+        order_items,
+        orderId, // Передаем orderId
+        [
+          "product_id",
+          "title",
+          "count",
+          "total_cost",
+          "color",
+          "size",
+          "product_code",
+        ],
+        (item) => [
+          item.product_id,
+          item.title,
+          item.count,
+          item.total_cost,
+          item.color,
+          item.size,
+          item.product_code,
+        ]
+      );
+
+      const result = await getOrderById(orderId);
+      res.status(201).json(result);
+    } catch (error) {
+      console.error("Ошибка при добавлении данных:", error);
+      res.status(500).send("Ошибка при добавлении данных");
+    }
+  });
 };
 
 module.exports = createOrders;
