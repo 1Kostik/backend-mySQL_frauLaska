@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const LiqPay = require("liqpayjs-sdk");
 const { PRIVATE_KEY, PUBLIC_KEY } = process.env;
-const { updateOrderStatus } = require("./updateOrder");
+const { updatePaymentStatus } = require("./updateOrder");
 // const liqpay = new LiqPay(PUBLIC_KEY, PRIVATE_KEY);
 
 const verifySignature = (data, signature) => {
@@ -31,7 +31,8 @@ const liqpayCallback = (req, res) => {
         return orderId.split("_")[2];
       };
       console.log("orderIdNumber", orderIdNumber(orderId));
-      updateOrderStatus(orderIdNumber(orderId), "Сплачено");
+
+      updatePaymentStatus(orderIdNumber(orderId), "Сплачено");
 
       // Дополнительная обработка, например, обновление базы данных
     } else {
