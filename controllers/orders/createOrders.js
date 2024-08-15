@@ -18,6 +18,7 @@ const saveTableDataOrders = (
   recipient_name,
   recipient_last_name,
   recipient_phone,
+  call_me_back,
   columns,
   valueMapper
 ) => {
@@ -37,6 +38,7 @@ const saveTableDataOrders = (
       recipient_name,
       recipient_last_name,
       recipient_phone,
+      call_me_back,
     });
 
     if (!Array.isArray(values) || values.length === 0) {
@@ -128,6 +130,7 @@ const createOrders = async (req, res) => {
     recipient_name,
     recipient_last_name,
     recipient_phone,
+    call_me_back,
     order_items: orderItems,
   } = req.body;
 
@@ -196,6 +199,7 @@ const createOrders = async (req, res) => {
         recipient_name,
         recipient_last_name,
         recipient_phone,
+        call_me_back,
         [
           "status",
           "payment_status",
@@ -211,6 +215,7 @@ const createOrders = async (req, res) => {
           "recipient_name",
           "recipient_last_name",
           "recipient_phone",
+          "call_me_back",
         ],
         (item) => [
           item.status,
@@ -227,6 +232,7 @@ const createOrders = async (req, res) => {
           item.recipient_name,
           item.recipient_last_name,
           item.recipient_phone,
+          item.call_me_back,
         ]
       );
 
