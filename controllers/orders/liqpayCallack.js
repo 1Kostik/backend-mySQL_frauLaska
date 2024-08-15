@@ -12,17 +12,20 @@ const verifySignature = (data, signature) => {
   return calculatedSignature === signature;
 };
 
-const liqpayCallback = (req, res) => {
-  // console.log("liqpayCallback");
-  const { data, signature } = req.body;
 
+const liqpayCallback = (req, res) => {
+  console.log('first!!!!!!!!!!!!!!!!!!!!!!!$$$$$$$$$$$$$$$%%%%%%%%%%%%%%%%%%%%%%%%')
+  const { data, signature } = req.body;
+console.log("verifySignature", verifySignature(data, signature));
   if (verifySignature(data, signature)) {
     const decodedData = JSON.parse(
       Buffer.from(data, "base64").toString("utf8")
     );
-    // console.log("decodedData", decodedData);
+
     const paymentStatus = decodedData.status;
     const orderId = decodedData.order_id;
+
+    console.log("decodedData.info", decodedData);
 
     // Логика обработки статуса платежа
     if (paymentStatus === "success") {
@@ -30,12 +33,13 @@ const liqpayCallback = (req, res) => {
       const orderIdNumber = (orderId) => {
         return orderId.split("_")[2];
       };
-      console.log("orderIdNumber", orderIdNumber(orderId));
 
       updatePaymentStatus(orderIdNumber(orderId), "Сплачено");
+      res.redirect(`http://localhost:3000/ordered?order_id=${orderId}`);
 
       // Дополнительная обработка, например, обновление базы данных
     } else {
+      res.redirect(`http://localhost:3000`);
       console.log(`Платеж неуспешен для заказа: ${orderId}`);
       // Обработка ошибок
     }

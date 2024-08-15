@@ -152,6 +152,7 @@ const createOrders = async (req, res) => {
           variation.size === orderItems[i].size &&
           variation.color === orderItems[i].color
       );
+
       const { price, discount } = item_variation;
       const total_cost =
         Math.round(price - (price * discount) / 100) * orderItems[i].count;
@@ -165,6 +166,7 @@ const createOrders = async (req, res) => {
         count: orderItems[i].count,
       };
     });
+
     const total = order_item_array.reduce((acc, item) => {
       return item.total_cost + acc;
     }, 0);
