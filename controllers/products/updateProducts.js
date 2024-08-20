@@ -218,4 +218,23 @@ const updateTableFeedbacks = async (product_id, feedbacks) => {
       .catch((error) => reject(error));
   });
 };
-module.exports = updateProducts;
+
+const updateVariationCount = async (variation_id, newCount) => {
+  return new Promise((resolve, reject) => {
+    if (!variation_id || typeof newCount !== "number") {
+      return reject("Invalid input");
+    }
+
+    const query = "UPDATE variations SET count = ? WHERE id = ?";
+
+    db.query(query, [newCount, variation_id], (err, result) => {
+      if (err) {
+        console.error("Error updating variation count:", err);
+        return reject(err);
+      }
+      resolve(result);
+    });
+  });
+};
+
+module.exports = { updateProducts, updateVariationCount };
