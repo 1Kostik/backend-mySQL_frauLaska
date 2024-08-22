@@ -9,6 +9,8 @@ const {
   deleteVariations,
   deleteFeedbacks,
   upload,
+  decreaseProductCount,
+  increaseProductCount,
 } = require("./products");
 
 const {
@@ -52,4 +54,6 @@ module.exports = {
   updateOrder,
   makePayment,
   liqpayCallback,
+  decreaseProductCount,
+  increaseProductCount,
 };

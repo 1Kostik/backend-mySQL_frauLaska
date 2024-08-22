@@ -1,11 +1,19 @@
 const { createProducts, upload } = require("./createProducts");
 const getAllProductsHandler = require("./getAllProductsHandler");
-const { updateProducts, updateVariationCount } = require("./updateProducts");
+const {
+  updateProducts,
+  increaseVariationCount,
+  decreaseVariationCount,
+} = require("./updateProducts");
 const deleteProducts = require("./deleteProducts");
 const getProductHandler = require("./getProductHandler");
 const deleteImages = require("./deleteImages");
 const deleteVariations = require("./deleteVariations");
 const deleteFeedbacks = require("./deleteFeedbacks");
+const increaseProductCount = require("./increaseProductCount");
+const decreaseProductCount = require("./decreaseProductCount");
+
+
 
 module.exports = {
   createProducts,
@@ -17,5 +25,8 @@ module.exports = {
   deleteVariations,
   deleteFeedbacks,
   upload,
-  updateVariationCount,
+  increaseVariationCount,
+  decreaseVariationCount,
+  increaseProductCount,
+  decreaseProductCount
 };
