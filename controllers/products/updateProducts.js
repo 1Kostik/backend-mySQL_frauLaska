@@ -87,7 +87,9 @@ const updateProducts = async (req, res, next) => {
         );
       }
     }
-    const feedbackIds = feedbacks ? feedbacks.map((item) => item.id).filter(Boolean):null;
+    const feedbackIds = feedbacks
+      ? feedbacks.map((item) => item.id).filter(Boolean)
+      : null;
 
     if (feedbacks && feedbacks.length > 0) {
       if (feedbackIds.length > 0) {
@@ -219,22 +221,67 @@ const updateTableFeedbacks = async (product_id, feedbacks) => {
   });
 };
 
-const updateVariationCount = async (variation_id, newCount) => {
+const getVariationCount = (id) => {
   return new Promise((resolve, reject) => {
-    if (!variation_id || typeof newCount !== "number") {
-      return reject("Invalid input");
-    }
-
-    const query = "UPDATE variations SET count = ? WHERE id = ?";
-
-    db.query(query, [newCount, variation_id], (err, result) => {
-      if (err) {
-        console.error("Error updating variation count:", err);
-        return reject(err);
-      }
-      resolve(result);
+    const sql = `SELECT count FROM variations WHERE id = ?`;
+    db.query(sql, [id], (err, data) => {
+      if (err) return reject(err);
+      resolve(data[0].count);
     });
   });
 };
 
-module.exports = { updateProducts, updateVariationCount };
+const increaseVariationCount = async (variation_id, count) => {
+  try {
+    const prevCount = await getVariationCount(variation_id);
+    const newCount = prevCount + count;
+    return new Promise((resolve, reject) => {
+      if (!variation_id || typeof newCount !== "number") {
+        return reject("Invalid input");
+      }
+
+      const query = "UPDATE variations SET count = ? WHERE id = ?";
+
+      db.query(query, [newCount, variation_id], (err, result) => {
+        if (err) {
+          console.error("Error updating variation count:", err);
+          return reject(err);
+        }
+        resolve(result);
+      });
+    });
+  }
+   catch (error) {
+    console.log(error);
+  }
+};
+
+const decreaseVariationCount = async (variation_id, count) => {
+  try {
+    const prevCount = await getVariationCount(variation_id);
+    const newCount = prevCount - count;
+    return new Promise((resolve, reject) => {
+      if (!variation_id || typeof newCount !== "number") {
+        return reject("Invalid input");
+      }
+
+      const query = "UPDATE variations SET count = ? WHERE id = ?";
+
+      db.query(query, [newCount, variation_id], (err, result) => {
+        if (err) {
+          console.error("Error updating variation count:", err);
+          return reject(err);
+        }
+        resolve(result);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  updateProducts,
+  increaseVariationCount,
+  decreaseVariationCount,
+};
