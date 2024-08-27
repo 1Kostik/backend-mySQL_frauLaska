@@ -30,6 +30,8 @@ const {
   liqpayCallback,
 } = require("./orders");
 
+const { searchSettlements, getWarehouses } = require("./newPost");
+
 module.exports = {
   createProducts,
   getProductHandler,
@@ -56,4 +58,6 @@ module.exports = {
   liqpayCallback,
   decreaseProductCount,
   increaseProductCount,
+  searchSettlements,
+  getWarehouses,
 };
