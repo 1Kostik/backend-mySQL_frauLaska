@@ -10,6 +10,7 @@ const {
 
 const makePayment = require("./makePayment");
 const liqpayCallback = require("./liqpayCallack");
+const changePaymentStatus = require("./changePaymentStatus");
 
 module.exports = {
   createOrders,
@@ -21,4 +22,5 @@ module.exports = {
   updateOrder,
   updateOrderStatus,
   updatePaymentStatus,
+  changePaymentStatus,
 };

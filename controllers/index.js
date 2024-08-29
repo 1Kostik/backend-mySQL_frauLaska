@@ -28,6 +28,7 @@ const {
   updateOrder,
   makePayment,
   liqpayCallback,
+  changePaymentStatus,
 } = require("./orders");
 
 const { searchSettlements, getWarehouses } = require("./newPost");
@@ -58,6 +59,8 @@ module.exports = {
   liqpayCallback,
   decreaseProductCount,
   increaseProductCount,
+  changePaymentStatus,
   searchSettlements,
   getWarehouses,
+
 };
