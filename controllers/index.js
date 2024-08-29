@@ -31,6 +31,8 @@ const {
   changePaymentStatus,
 } = require("./orders");
 
+const { searchSettlements, getWarehouses } = require("./newPost");
+
 module.exports = {
   createProducts,
   getProductHandler,
@@ -58,4 +60,7 @@ module.exports = {
   decreaseProductCount,
   increaseProductCount,
   changePaymentStatus,
+  searchSettlements,
+  getWarehouses,
+
 };
