@@ -11,6 +11,7 @@ const {
   upload,
   decreaseProductCount,
   increaseProductCount,
+  getPopularityProducts,
 } = require("./products");
 
 const {
@@ -32,6 +33,7 @@ const {
 } = require("./orders");
 
 const { searchSettlements, getWarehouses } = require("./newPost");
+
 
 module.exports = {
   createProducts,
@@ -62,5 +64,5 @@ module.exports = {
   changePaymentStatus,
   searchSettlements,
   getWarehouses,
-
+  getPopularityProducts
 };

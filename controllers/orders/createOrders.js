@@ -1,7 +1,7 @@
 const db = require("../../db");
 const getProduct = require("../products/getProduct");
 const getOrderById = require("./getOrdersById");
-const { decreaseVariationCount } = require("../products/updateProducts");
+const { decreaseVariationCount, increasePopularity } = require("../products/updateProducts");
 
 const saveTableDataOrders = (
   tableName,
@@ -158,7 +158,7 @@ const createOrders = async (req, res) => {
       );
  
       decreaseVariationCount(item_variation.id, orderItems[i].count);
-
+      increasePopularity(id)
       const { price, discount } = item_variation;
       const total_cost =
         Math.round(price - (price * discount) / 100) * orderItems[i].count;

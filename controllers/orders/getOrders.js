@@ -1,7 +1,12 @@
 const db = require("../../db");
 
-const fetchAllOrders = () => {
+const fetchAllOrders = (limit, page, sortOrder) => {
   return new Promise((resolve, reject) => {
+    const offset = (page - 1) * limit;
+    const orderToSort = ["ASC", "DESC"].includes(sortOrder?.toUpperCase())
+      ? sortOrder.toUpperCase()
+      : "ASC";
+
     const sql = `
       SELECT 
         o.id AS order_id,       
@@ -31,12 +36,16 @@ const fetchAllOrders = () => {
       FROM 
         orders o
       LEFT JOIN 
-        order_items oi ON o.id = oi.orders_items_id
+        order_items oi ON o.id = oi.orders_items_id     
+      ORDER BY 
+        o.order_date ${orderToSort}
+      LIMIT ? OFFSET ?;
     `;
-    db.query(sql, (err, data) => {
+
+    const queryParams = [limit, offset];
+    db.query(sql, queryParams, (err, data) => {
       if (err) return reject(err);
 
-      // Группировка товаров по заказам
       const orders = data.reduce((acc, row) => {
         const {
           order_id,
@@ -55,7 +64,7 @@ const fetchAllOrders = () => {
           recipient_name,
           recipient_last_name,
           recipient_phone,
-          order_item_db_id, // ID элемента заказа
+          order_item_db_id,
           product_id,
           title,
           count,
@@ -89,7 +98,7 @@ const fetchAllOrders = () => {
 
         if (order_item_db_id) {
           acc[order_id].order_items.push({
-            id: order_item_db_id, // Сохраняем id из таблицы order_items
+            id: order_item_db_id,
             product_id,
             title,
             count,
@@ -103,15 +112,54 @@ const fetchAllOrders = () => {
         return acc;
       }, {});
 
-      resolve(Object.values(orders));
+      // Перетворюємо об'єкт в масив
+      const sortedOrders = Object.values(orders);
+
+      // Сортуємо масив за полем order_date
+      sortedOrders.sort((a, b) => {
+        const dateA = new Date(a.order_date);
+        const dateB = new Date(b.order_date);
+        return orderToSort === "ASC" ? dateA - dateB : dateB - dateA;
+      });
+
+      resolve(sortedOrders);
+    });
+  });
+};
+
+const fetchOrders = async () => {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT 
+       *
+      FROM 
+        orders o
+      LEFT JOIN 
+        order_items oi ON o.id = oi.orders_items_id `;
+
+    db.query(sql, (err, data) => {
+      if (err) return reject(err);
+      resolve(data);
     });
   });
 };
 
 const getAllOrders = async (req, res) => {
+  const limit = 20;
   try {
-    const orders = await fetchAllOrders();
-    res.status(200).json(orders);
+    const { page = 1, sortOrder = "ASC" } = req.query;
+
+    const orders = await fetchAllOrders(
+      parseInt(limit),
+      parseInt(page),
+      sortOrder
+    );
+
+    const orderItems = await fetchOrders();
+
+    const totalOrders = orderItems.length;
+
+    res.status(200).json({ data: orders, totalOrders });
   } catch (error) {
     console.error("Ошибка при получении всех заказов:", error);
     res.status(500).send("Ошибка при получении всех заказов");

@@ -12,12 +12,14 @@ const {
   upload,
   increaseProductCount,
   decreaseProductCount,
+  getPopularityProducts,
 } = require("../../controllers");
 
 const router = express.Router();
 
 router.get("/products/:id", getProductHandler);
 router.get("/products", getAllProductsHandler);
+router.get("/products-popularity", getPopularityProducts);
 
 router.post("/products", upload.array("imageUrls"), createProducts);
 
