@@ -50,4 +50,24 @@ const updateOrder = async (req, res) => {
   }
 };
 
-module.exports = { updateOrder, updateOrderStatus, updatePaymentStatus };
+const updatePaymentInfo = (id, paymentInfo) => {
+  return new Promise((resolve, reject) => {
+    const sql = `UPDATE orders SET payment_info = ? WHERE id = ?`;
+    console.log("id", id);
+    // console.log('paymentInfo', paymentInfo)
+    db.query(sql, [JSON.stringify(paymentInfo), id], (err, result) => {
+      if (err) {
+        console.error("Error updating payment info:", err);
+        return reject(new Error("Помилка оновлення інформації про платіж"));
+      }
+      resolve(result);
+    });
+  });
+};
+
+module.exports = {
+  updateOrder,
+  updateOrderStatus,
+  updatePaymentStatus,
+  updatePaymentInfo,
+};

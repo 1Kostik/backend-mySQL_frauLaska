@@ -1,7 +1,11 @@
 const db = require("../../db");
-const getProduct = require("../products/getProduct");
+
+const { getProduct } = require("../products");
 const getOrderById = require("./getOrdersById");
 const { decreaseVariationCount, increasePopularity } = require("../products/updateProducts");
+
+const sendEmail = require("../../services/sendMail");
+const sendTelegramNotification = require("../../services/sendTelegramNotification");
 
 const saveTableDataOrders = (
   tableName,
@@ -156,12 +160,14 @@ const createOrders = async (req, res) => {
           variation.size === orderItems[i].size &&
           variation.color === orderItems[i].color
       );
- 
+
       decreaseVariationCount(item_variation.id, orderItems[i].count);
+
       increasePopularity(id)
-      const { price, discount } = item_variation;
-      const total_cost =
-        Math.round(price - (price * discount) / 100) * orderItems[i].count;
+      
+      const { price } = item_variation;
+      const total_cost = price * orderItems[i].count;
+
       return {
         product_id: id,
         product_code,
@@ -250,7 +256,7 @@ const createOrders = async (req, res) => {
       await saveTableDataOrderItems(
         "order_items",
         order_items,
-        orderId, // Передаем orderId
+        orderId,
         [
           "product_id",
           "title",
@@ -271,8 +277,14 @@ const createOrders = async (req, res) => {
         ]
       );
 
-      const result = await getOrderById(orderId);
-      res.status(201).json(result);
+      const order = await getOrderById(orderId);
+
+      if (order.payment_method === "deliveryPayment") {
+        await sendEmail(order);
+        await sendTelegramNotification(order);
+      }
+
+      res.status(201).json(order);
     } catch (error) {
       console.error("Ошибка при добавлении данных:", error);
       res.status(500).send("Ошибка при добавлении данных");

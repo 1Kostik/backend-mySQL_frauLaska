@@ -1,0 +1,192 @@
+<mjml>
+  <mj-head>
+    <mj-title>Заказ на сайті Frau Laska</mj-title>
+    <mj-preview>Заказ на сайті Frau Laska</mj-preview>
+    <mj-font
+      name="Raleway"
+      href="https://fonts.googleapis.com/css?family=Raleway"
+    />
+    <mj-style inline="inline">
+      .text {padding: 5px !important} .text div {color: #d7d7d7 !important;
+      font-family: Helvetica !important;} .text span { color: #838383
+      !important; } .link a{ text-decoration: underline !important; }
+      .text.total span { padding-right: 10px !important; font-size: 14px; color:
+      #d7d7d7 !important}
+    </mj-style>
+  </mj-head>
+
+  <mj-body background-color="#252525" width="700px">
+  
+    <mj-section
+      padding="10px 30px"
+      background-color="#171616"
+      border-bottom="15px solid #252525"
+    >
+      <mj-column>
+        <mj-image
+          align="left"
+          width="50px"
+          height="40px"
+          padding="0"
+          src="D:\projects\backend-mySQL_frauLaska\publick\images\Logo.webp"
+          href="http://localhost:3000/"
+        />
+      </mj-column>
+      <mj-column padding-left="30px">
+        <mj-text css-class="text">
+          <span>Дмитро Балинець</span>, дякуємо за покупку
+        </mj-text>
+        <mj-text css-class="text"> <span>Замовлення:</span> №2294068 </mj-text>
+        <mj-text css-class="text">
+          <span>Оформлено:</span> 21 червня 2024 р.
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 10px"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+        <mj-text css-class="text">
+          Оплата: <span>Картою на сайті</span>
+        </mj-text>
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+        <mj-text css-class="text">
+          Сума до сплати: <span>171,00грн</span>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="0px 30px 10px"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="56px">
+        <mj-text css-class="text"> Замовник </mj-text>
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+        <mj-text css-class="text"> <span>Дмитро Балинець</span> </mj-text>
+        <mj-text css-class="text"><span>0631011119</span> </mj-text>
+        <mj-text css-class="text"><span>dimside@gmil.com</span> </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="0px 30px 10px"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="33px">
+        <mj-text css-class="text"> Отримувач </mj-text>
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+        <mj-text css-class="text"> <span>Дмитро Балинець</span> </mj-text>
+        <mj-text css-class="text"><span>0631011119</span> </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="0px 30px 15px"
+      background-color="#171616"
+      border-bottom="15px solid #252525"
+    >
+      <mj-column>
+        <mj-text css-class="text"> Адреса доставки </mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text css-class="text"
+          ><span>Львівська Трускавець, 3, 3</span>
+        </mj-text>
+        <mj-text css-class="text"><span>Відділення 55</span> </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 0px"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+        <mj-text css-class="text" font-size="18px" font-weight="bold">
+          Замовлення
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 0"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 15px">
+        <mj-image
+          align="center"
+          width="50px"
+          height="50px"
+          src="https://res.cloudinary.com/drwfk1ks0/image/upload/v1722268333/products/520975_1_1712818707.webp"
+          padding="0px"
+          border-radius="8px"
+        />
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px">
+        <mj-text css-class="text" align="left"> Міксер Zelmer ZHM1652 </mj-text>
+        <mj-text css-class="text" align="left">659 грн × 1 </mj-text>
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b770" padding="10px 0 32px">
+        <mj-text css-class="text" align="right"> 659 грн </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 0"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="1px solid #b7b7b7" padding="0 0 15px">
+        <mj-text css-class="text" align="center">
+          Доставка «Новою поштою»
+        </mj-text>
+      </mj-column>
+      <mj-column border-bottom="1px solid #b7b7b7" padding="0 0 15px">
+        <mj-text css-class="text" align="right">
+          за тарифами перевізника
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 10px"
+      background-color="#171616"
+    >
+      <mj-column border-bottom="3px solid #b7b7b7" padding="0 0 15px ">
+        <mj-text
+          css-class="text total"
+          align="right"
+          font-size="18px"
+          font-weight="bold"
+        >
+          <span>Всього</span> 659 грн
+        </mj-text>
+      </mj-column>
+    </mj-section>
+
+    <mj-section
+      css-class="section"
+      padding="15px 30px 10px"
+      background-color="#171616"
+    >
+      <mj-column padding="0 0 15px">
+        <mj-text css-class="text" font-size="16px">+380637053806</mj-text>
+      </mj-column>
+      <mj-column padding="0 0 15px">
+        <mj-text css-class="text" font-size="16px">lana@jar.com</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

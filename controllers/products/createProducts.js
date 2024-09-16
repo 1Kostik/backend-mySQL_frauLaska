@@ -2,7 +2,7 @@ const db = require("../../db");
 const { getAllProducts } = require("./getAllProducts");
 const multer = require("multer");
 const cloudinary = require("../../cloudinaryConfig");
-const getProduct = require("./getProduct");
+const { getProduct } = require("./getProduct");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -147,30 +147,29 @@ const createProducts = async (req, res, next) => {
     feedbacks,
   } = req.body;
 
-  const productData = {
-    category_id,
-    title,
-    description,
-    ranking: ranking === "" ? undefined : ranking,
-    main_image,
-    benefit,
-    popularity: popularity === "" ? undefined : ranking,
-    product_code,
-    composition,
-  };
-
   const imageFiles = req.files;
 
   try {
-    // Сохранение продукта
-    const product_id = await saveTableProduct(productData);
-
-    // Загрузка изображений
     const folder = `products`;
     const uploadPromises = imageFiles.map((file) =>
       uploadImageToCloudinary(file, folder)
     );
     const imageUrls = await Promise.all(uploadPromises);
+    const mainImageLink = imageUrls.find((link) => link.includes(main_image));
+
+    const productData = {
+      category_id,
+      title,
+      description,
+      ranking: ranking === "" ? undefined : ranking,
+      main_image: mainImageLink,
+      benefit,
+      popularity: popularity === "" ? undefined : ranking,
+      product_code,
+      composition,
+    };
+console.log('productData', productData)
+    const product_id = await saveTableProduct(productData);
 
     // Сохранение изображений, вариаций и отзывов
     await saveTableData(

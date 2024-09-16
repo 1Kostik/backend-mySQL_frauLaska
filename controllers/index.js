@@ -30,6 +30,7 @@ const {
   makePayment,
   liqpayCallback,
   changePaymentStatus,
+  getOrderById,
 } = require("./orders");
 
 const { searchSettlements, getWarehouses } = require("./newPost");
@@ -64,5 +65,7 @@ module.exports = {
   changePaymentStatus,
   searchSettlements,
   getWarehouses,
+  getOrderById,
   getPopularityProducts
 };
+

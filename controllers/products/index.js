@@ -12,9 +12,8 @@ const deleteVariations = require("./deleteVariations");
 const deleteFeedbacks = require("./deleteFeedbacks");
 const increaseProductCount = require("./increaseProductCount");
 const decreaseProductCount = require("./decreaseProductCount");
+const { getMainImage, getProduct, getImages } = require("./getProduct");
 const getPopularityProducts = require("./getPopularityProducts");
-
-
 
 module.exports = {
   createProducts,
@@ -30,5 +29,8 @@ module.exports = {
   decreaseVariationCount,
   increaseProductCount,
   decreaseProductCount,
+  getProduct,
+  getImages,
+  getMainImage,
   getPopularityProducts
 };
