@@ -231,6 +231,16 @@ const getVariationCount = (id) => {
   });
 };
 
+const getPopularity = (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT popularity FROM products WHERE id = ?`;
+    db.query(sql, [id], (err, data) => {
+      if (err) return reject(err);
+      resolve(data[0].popularity);
+    });
+  });
+};
+
 const increaseVariationCount = async (variation_id, count) => {
   try {
     const prevCount = await getVariationCount(variation_id);
@@ -250,8 +260,7 @@ const increaseVariationCount = async (variation_id, count) => {
         resolve(result);
       });
     });
-  }
-   catch (error) {
+  } catch (error) {
     console.log(error);
   }
 };
@@ -280,8 +289,33 @@ const decreaseVariationCount = async (variation_id, count) => {
   }
 };
 
+const increasePopularity = async (product_id) => {
+  try {
+    const prevCount = await getPopularity(product_id);
+    const newCount = prevCount + 1;
+    return new Promise((resolve, reject) => {
+      if (!product_id) {
+        return reject("Invalid input");
+      }
+
+      const query = "UPDATE products SET popularity = ? WHERE id = ?";
+
+      db.query(query, [newCount, product_id], (err, result) => {
+        if (err) {
+          console.error("Error updating popularity :", err);
+          return reject(err);
+        }
+        resolve(result);
+      });
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   updateProducts,
   increaseVariationCount,
   decreaseVariationCount,
+  increasePopularity,
 };

@@ -2,7 +2,7 @@ const db = require("../../db");
 
 const { getProduct } = require("../products");
 const getOrderById = require("./getOrdersById");
-const { decreaseVariationCount } = require("../products/updateProducts");
+const { decreaseVariationCount, increasePopularity } = require("../products/updateProducts");
 
 const sendEmail = require("../../services/sendMail");
 const sendTelegramNotification = require("../../services/sendTelegramNotification");
@@ -163,8 +163,11 @@ const createOrders = async (req, res) => {
 
       decreaseVariationCount(item_variation.id, orderItems[i].count);
 
+      increasePopularity(id)
+      
       const { price } = item_variation;
       const total_cost = price * orderItems[i].count;
+
       return {
         product_id: id,
         product_code,

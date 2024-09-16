@@ -1,4 +1,4 @@
-const updatePaymentStatus = require("./updateOrder");
+const { updatePaymentStatus } = require("./updateOrder");
 
 const changePaymentStatus = async (req, res) => {
   const { id } = req.params;
@@ -11,12 +11,10 @@ const changePaymentStatus = async (req, res) => {
   } catch (error) {
     console.log(error);
 
-    return res
-      .status(500)
-      .json({
-        message: "Failed to update payment status",
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Failed to update payment status",
+      error: error.message,
+    });
   }
 };
 module.exports = changePaymentStatus;

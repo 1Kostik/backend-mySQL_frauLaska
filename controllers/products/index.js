@@ -13,8 +13,7 @@ const deleteFeedbacks = require("./deleteFeedbacks");
 const increaseProductCount = require("./increaseProductCount");
 const decreaseProductCount = require("./decreaseProductCount");
 const { getMainImage, getProduct, getImages } = require("./getProduct");
-
-
+const getPopularityProducts = require("./getPopularityProducts");
 
 module.exports = {
   createProducts,
@@ -33,4 +32,5 @@ module.exports = {
   getProduct,
   getImages,
   getMainImage,
+  getPopularityProducts
 };
