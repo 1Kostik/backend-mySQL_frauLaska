@@ -47,6 +47,16 @@ const getImages = (product_id) => {
   });
 };
 
+const getMainImage = (product_id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT main_image FROM products WHERE id = ?`;
+    db.query(sql, [product_id], (err, data) => {
+      if (err) return reject(err);
+      resolve(data[0].main_image);
+    });
+  });
+};
+
 const getVariations = (product_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT id, price, discount, count, color, size FROM variations WHERE product_id = ?`;
@@ -66,4 +76,4 @@ const getFeedbacks = (product_id) => {
     });
   });
 };
-module.exports = getProduct;
+module.exports = { getProduct, getMainImage, getImages };

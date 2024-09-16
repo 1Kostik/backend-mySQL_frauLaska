@@ -1,5 +1,4 @@
 const LiqPay = require("liqpayjs-sdk");
-const getProduct = require("../products/getProduct");
 
 const { PRIVATE_KEY, PUBLIC_KEY } = process.env;
 
@@ -19,9 +18,8 @@ const makePayment = (req, res) => {
     action: "pay",
     currency: "UAH",
     result_url: `http://localhost:3000/ordered?order_id=${id}&email=${email}`,
-    server_url: "https://0440-31-144-5-117.ngrok-free.app/api/liqpay-callback",
-    info: `${{ email, order_items }}`,
-
+    server_url:
+      "https://f422-193-19-255-239.ngrok-free.app/api/liqpay-callback",
     description: `Оплата замовлення у магазині Frau Laska\n Номер замовлення: ${id}\n ${titleHandler(
       order_items
     )}`,

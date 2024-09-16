@@ -1,4 +1,4 @@
-const getProduct = require("./getProduct");
+const { getProduct } = require("./getProduct");
 
 const getProductHandler = async (req, res) => {
   const { id } = req.params;

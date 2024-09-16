@@ -1,4 +1,5 @@
 const db = require("../../db");
+const { getImages } = require("./getProduct");
 
 const getCategoryIdByProductId = async (productId) => {
   return new Promise((resolve, reject) => {
@@ -10,7 +11,6 @@ const getCategoryIdByProductId = async (productId) => {
   });
 };
 
-
 const getProducts = async (
   categories,
   search,
@@ -19,9 +19,9 @@ const getProducts = async (
   sortOrder,
   limit,
   offset
-) => {  
+) => {
   return new Promise(async (resolve, reject) => {
-    let sql = '';
+    let sql = "";
     const queryParams = [];
 
     // Разделяем itemIds по категориям
@@ -57,10 +57,15 @@ const getProducts = async (
                 FROM variations
                 GROUP BY product_id
               ) v ON p.id = v.product_id
-              WHERE p.category_id = ? AND p.id IN (${itemsForCategory.map(() => '?').join(',')})
+              WHERE p.category_id = ? AND p.id IN (${itemsForCategory
+                .map(() => "?")
+                .join(",")})
             )
           `;
-          queryParams.push(Number(category), ...itemsForCategory.map(id => Number(id)));
+          queryParams.push(
+            Number(category),
+            ...itemsForCategory.map((id) => Number(id))
+          );
         } else {
           // Если нет конкретных товаров для текущей категории, выбираем все товары
           sql += `
@@ -79,7 +84,7 @@ const getProducts = async (
         }
 
         if (index < categories.length - 1) {
-          sql += ' UNION ALL ';
+          sql += " UNION ALL ";
         }
       });
     } else {
@@ -97,15 +102,21 @@ const getProducts = async (
 
       // Добавляем фильтрацию по идентификаторам товаров, если указаны
       if (itemIds && itemIds.length > 0) {
-        sql += ` AND p.id IN (${itemIds.map(() => '?').join(',')})`;
-        queryParams.push(...itemIds.map(id => Number(id)));
+        sql += ` AND p.id IN (${itemIds.map(() => "?").join(",")})`;
+        queryParams.push(...itemIds.map((id) => Number(id)));
       }
     }
 
     // Добавляем фильтрацию по поисковому запросу
     if (search) {
-      search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
-      sql += (sql.includes('WHERE') ? ' AND' : ' WHERE') + " LOWER(REPLACE(REPLACE(p.title, '  ', ' '), '  ', ' ')) LIKE ?";
+      search = search
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      sql +=
+        (sql.includes("WHERE") ? " AND" : " WHERE") +
+        " LOWER(REPLACE(REPLACE(p.title, '  ', ' '), '  ', ' ')) LIKE ?";
       queryParams.push(`%${search}%`);
     }
 
@@ -127,7 +138,7 @@ const getProducts = async (
 
     db.query(sql, queryParams, (err, data) => {
       if (err) return reject(err);
-      
+
       resolve(data);
     });
   });
@@ -171,16 +182,6 @@ const getAllProducts = async (
   }
 };
 
-const getImages = async (product_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT img_url, id FROM imageUrls WHERE product_id = ?`;
-    db.query(sql, [product_id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
-};
-
 const getVariations = async (product_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT id, price, discount, count, color, size FROM variations WHERE product_id = ?`;
@@ -201,4 +202,10 @@ const getFeedbacks = async (product_id) => {
   });
 };
 
-module.exports = { getAllProducts, getVariations, getFeedbacks, getImages, getCategoryIdByProductId };
+module.exports = {
+  getAllProducts,
+  getVariations,
+  getFeedbacks,
+  getImages,
+  getCategoryIdByProductId,
+};
