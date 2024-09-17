@@ -53,8 +53,7 @@ const updateOrder = async (req, res) => {
 const updatePaymentInfo = (id, paymentInfo) => {
   return new Promise((resolve, reject) => {
     const sql = `UPDATE orders SET payment_info = ? WHERE id = ?`;
-    console.log("id", id);
-    // console.log('paymentInfo', paymentInfo)
+
     db.query(sql, [JSON.stringify(paymentInfo), id], (err, result) => {
       if (err) {
         console.error("Error updating payment info:", err);
