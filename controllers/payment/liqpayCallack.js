@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const LiqPay = require("liqpayjs-sdk");
 
 const getOrderById = require("../orders/getOrdersById");
 const { updatePaymentStatus } = require("../orders/updateOrder");
@@ -8,6 +9,25 @@ const sendEmail = require("../../services/sendMail");
 const sendTelegramNotification = require("../../services/sendTelegramNotification");
 
 const { PRIVATE_KEY, PUBLIC_KEY } = process.env;
+
+var liqpay = new LiqPay(PUBLIC_KEY, PRIVATE_KEY);
+
+const sendingReceipt = (order_id, email, payment_id) => {
+  liqpay.api(
+    "request",
+    {
+      action: "ticket",
+      version: "3",
+      order_id,
+      payment_id,
+      email,
+      language: "uk",
+    },
+    function (json) {
+      console.log("json.status", json);
+    }
+  );
+};
 
 const verifySignature = (data, signature) => {
   const calculatedSignature = crypto
@@ -26,11 +46,17 @@ const liqpayCallback = async (req, res) => {
         Buffer.from(data, "base64").toString("utf8")
       );
 
-      const paymentStatus = decodedData.status;
-      const orderId = decodedData.order_id;
+      const {
+        status: paymentStatus,
+        order_id: orderId,
+        info: email,
+        payment_id,
+      } = decodedData;
 
       if (paymentStatus === "success") {
         console.log(`Платіж успішно завершено для замовлення: ${orderId}`);
+
+        sendingReceipt(orderId, email, payment_id);
 
         const orderIdNumber = (orderId) => {
           return orderId.split("_")[2];
