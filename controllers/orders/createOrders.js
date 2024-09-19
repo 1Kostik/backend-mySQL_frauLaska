@@ -279,7 +279,7 @@ const createOrders = async (req, res) => {
 
       const order = await getOrderById(orderId);
 
-      if (order.payment_method === "deliveryPayment") {
+      if (order.payment_method === "Накладний платіж") {
         await sendEmail(order);
         await sendTelegramNotification(order);
       }
