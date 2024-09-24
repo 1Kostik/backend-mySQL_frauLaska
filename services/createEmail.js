@@ -138,7 +138,7 @@ const createEmail = async (order) => {
       padding="15px 30px 0"
       background-color="#171616"
     >
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 15px">
+      <mj-column border-bottom="1px solid #b7b7b770" padding="0 10px 15px 0" width="60px">
         <mj-image
           align="center"
           width="50px"
@@ -148,13 +148,13 @@ const createEmail = async (order) => {
           border-radius="8px"
         />
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px">
+      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px" width="340px">
         <mj-text css-class="text" align="left">${title}</mj-text>
         <mj-text css-class="text" align="left">${
           total_cost / count
         } грн × ${count} </mj-text>
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px">
+      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px" width="120px">
         ${
           color
             ? `<mj-text css-class="text" align="left" padding="0">
@@ -184,7 +184,7 @@ const createEmail = async (order) => {
         }
         
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="10px 0 32px">
+      <mj-column border-bottom="1px solid #b7b7b770" padding="10px 0 32px" width="120px">
         <mj-text css-class="text" align="right"> ${total_cost} грн </mj-text>
       </mj-column>
     </mj-section>`;
