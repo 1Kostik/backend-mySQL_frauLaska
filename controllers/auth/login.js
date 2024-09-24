@@ -24,25 +24,32 @@ const userFindAndUpdateToken = async (id, token) => {
   });
 };
 
-const login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await userFind({ email });
+const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    const user = await userFind({ email });
 
-  if (!user) {
-    throw HttpError(401, "Email or password invalid!");
+    if (!user) {
+      return next(HttpError(401, "Email or password invalid!"));
+    }
+
+    const passwordCompare = await bcrypt.compare(password, user.password);
+
+    if (!passwordCompare) {
+      return next(HttpError(401, "Email or password invalid!"));
+    }
+
+    const payload = { id: user.id };
+    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "3h" });
+    await userFindAndUpdateToken(user.id, token);
+
+    res.json({
+      token,
+      name: user.name,
+    });
+  } catch (error) {
+    next(error);
   }
-  const passwordCompare = await bcrypt.compare(password, user.password);
-
-  if (!passwordCompare) {
-    throw HttpError(401, "Email or password invalid!");
-  }
-  const payload = { id: user.id };
-  const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "3h" });
-  await userFindAndUpdateToken(user.id, token);
-
-  res.json({
-    token,
-    name: user.name,
-  });
 };
+
 module.exports = { login, userFindAndUpdateToken, userFind };

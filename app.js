@@ -23,9 +23,15 @@ app.use("/api", ordersRouter);
 app.use("/api", authRouter);
 app.use("/api", newPostRouter);
 app.use("/api", paymentsRouter);
-module.exports = app;
 
-//   res.json(err);
-//   res.json(processedData);
-//   res.status(404).json({ message: "Not found page!" });
-//   res.status(status).json({ message });
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const message = err.message || 'Internal Server Error';
+
+  res.status(status).json({
+    status: status,
+    message: message,
+  });
+});
+
+module.exports = app;
