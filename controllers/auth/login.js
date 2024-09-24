@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const db = require("../../db");
 const { SECRET_KEY } = process.env;
+const { HttpError } = require("../../utils");
 
 const userFind = async ({ email }) => {
   return new Promise((resolve, reject) => {
@@ -12,6 +13,7 @@ const userFind = async ({ email }) => {
     });
   });
 };
+
 const userFindAndUpdateToken = async (id, token) => {
   return new Promise((resolve, reject) => {
     const sql = `UPDATE users SET token = ? WHERE id = ?`;
@@ -43,17 +45,4 @@ const login = async (req, res) => {
     name: user.name,
   });
 };
-module.exports = { login, userFindAndUpdateToken };
-
-// const updatePassword = async (id,password)=>{
-//     return new Promise((resolve, reject) => {
-//         const sql = `UPDATE users SET password = ? WHERE id = ?`;
-//         db.query(sql, [password,id], (err, data) => {
-//           if (err) return reject(err);
-//           resolve(data);
-//         });
-//       });
-// }
-
-// const hashPassword = await bcrypt.hash(password, 10);
-// const newPassword = await updatePassword(id, hashPassword);
+module.exports = { login, userFindAndUpdateToken, userFind };

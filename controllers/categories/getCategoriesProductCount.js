@@ -23,27 +23,7 @@ const getCategoriesProductCount = async (req, res) => {
         `;
 
     const results = await executeQuery(query);
-    /*
-SELECT 
-    c.id AS category_id, 
-    c.title AS category_title,
-    COUNT(p.id) AS product_count,
-    JSON_ARRAYAGG(
-        JSON_OBJECT(
-            'product_id', p.id,
-            'product_title', p.title,
-            'product_quantity', v.count
-        )
-    ) AS products
-FROM 
-    categories c
-LEFT JOIN 
-    products p ON c.id = p.category_id
-LEFT JOIN 
-    variations v ON p.id = v.product_id
-GROUP BY 
-    c.id, c.title;
-*/
+ 
     res.json(results);
   } catch (error) {
     console.error("Error fetching categories with product count:", error);

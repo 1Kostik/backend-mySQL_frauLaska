@@ -19,11 +19,11 @@ const makePayment = (req, res) => {
     currency: "UAH",
     result_url: `http://localhost:3000/ordered?order_id=${id}&email=${email}`,
     server_url:
-      "https://f422-193-19-255-239.ngrok-free.app/api/liqpay-callback",
+      "https://d247-91-214-138-200.ngrok-free.app/api/liqpay-callback",
     description: `Оплата замовлення у магазині Frau Laska;\n Номер замовлення: ${id};\n ${titleHandler(
       order_items
     )}`,
-    order_id: `order_id_${id}`,
+    order_id: `order_idK_${id}`,
     amount: total_amount,
     info: email,
   };
