@@ -23,7 +23,7 @@ const makePayment = (req, res) => {
     description: `Оплата замовлення у магазині Frau Laska;\n Номер замовлення: ${id};\n ${titleHandler(
       order_items
     )}`,
-    order_id: `order_id_${id}`,
+    order_id: `order_idK_${id}`,
     amount: total_amount,
     info: email,
   };

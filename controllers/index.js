@@ -1,4 +1,4 @@
-const { login, logout } = require("./auth");
+const { login, logout, register } = require("./auth");
 const {
   createProducts,
   getProductHandler,
@@ -52,6 +52,7 @@ module.exports = {
   upload,
   login,
   logout,
+  register,
   getCategoriesProductCount,
   createOrders,
   deleteOrder,
