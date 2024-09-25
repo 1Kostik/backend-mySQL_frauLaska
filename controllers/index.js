@@ -34,6 +34,7 @@ const {
 } = require("./orders");
 
 const { searchSettlements, getWarehouses } = require("./newPost");
+const sendCoursesNotification = require("./courses");
 
 
 module.exports = {
@@ -67,6 +68,7 @@ module.exports = {
   searchSettlements,
   getWarehouses,
   getOrderById,
-  getPopularityProducts
+  getPopularityProducts,
+  sendCoursesNotification
 };
 
