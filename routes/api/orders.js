@@ -9,15 +9,16 @@ const {
   liqpayCallback,
   changePaymentStatus,
 } = require("../../controllers");
+const authenticate = require("../../middleware/aurhenticate");
 
 const router = express.Router();
 
-router.get("/orders", getAllOrders);
-router.get("/orders/:id", getOrderHandler);
+router.get("/orders", authenticate, getAllOrders);
+router.get("/orders/:id", authenticate, getOrderHandler);
 router.post("/orders", createOrders);
-router.delete("/orders/:id", deleteOrder);
-router.put("/orders/:id", updateOrder);
-router.patch("/orders/payment-status/:id", changePaymentStatus);
+router.delete("/orders/:id", authenticate, deleteOrder);
+router.put("/orders/:id", authenticate, updateOrder);
+router.patch("/orders/payment-status/:id", authenticate, changePaymentStatus);
 router.post("/orders/payment", makePayment);
 router.post("/liqpay-callback", liqpayCallback);
 

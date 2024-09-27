@@ -1,5 +1,10 @@
-const { login } = require("./login");
+const { login, userFindById } = require("./login");
 const logout = require("./logout");
-const register = require("./register");
+// const register = require("./register");
 
-module.exports = { login, logout, register };
+module.exports = {
+  login,
+  logout,
+  //  register,
+  userFindById,
+};

@@ -1,4 +1,9 @@
-const { login, logout, register } = require("./auth");
+const {
+  login,
+  logout,
+  //  register,
+  userFindById,
+} = require("./auth");
 const {
   createProducts,
   getProductHandler,
@@ -35,7 +40,6 @@ const {
 
 const { searchSettlements, getWarehouses } = require("./newPost");
 
-
 module.exports = {
   createProducts,
   getProductHandler,
@@ -52,7 +56,7 @@ module.exports = {
   upload,
   login,
   logout,
-  register,
+  // register,
   getCategoriesProductCount,
   createOrders,
   deleteOrder,
@@ -67,6 +71,6 @@ module.exports = {
   searchSettlements,
   getWarehouses,
   getOrderById,
-  getPopularityProducts
+  getPopularityProducts,
+  userFindById,
 };
-

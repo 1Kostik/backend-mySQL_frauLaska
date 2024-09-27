@@ -4,6 +4,17 @@ const db = require("../../db");
 const { SECRET_KEY } = process.env;
 const { HttpError } = require("../../utils");
 
+const userFindById = async (id) => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM users WHERE id=?`;
+    db.query(sql, [id], (err, data) => {
+      if (err) {
+        return reject(err);
+      }
+      resolve(data[0]);
+    });
+  });
+};
 const userFind = async ({ email }) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT * FROM users WHERE email = ?`;
@@ -52,4 +63,4 @@ const login = async (req, res, next) => {
   }
 };
 
-module.exports = { login, userFindAndUpdateToken, userFind };
+module.exports = { login, userFindAndUpdateToken, userFind, userFindById };

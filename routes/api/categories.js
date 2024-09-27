@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.get("/categories", getCategories);
 router.get("/categories/product-count", getCategoriesProductCount);
-router.post("/categories", createCategories);
-router.patch("/categories/:id", updateCategories);
-router.delete("/categories/:id", deleteCategories);
+router.post("/categories", authenticate, createCategories);
+router.patch("/categories/:id", authenticate, updateCategories);
+router.delete("/categories/:id", authenticate, deleteCategories);
 
 module.exports = router;
