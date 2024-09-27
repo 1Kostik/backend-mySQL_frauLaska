@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const express = require("express");
-const cors = require("cors");
 const app = express();
+const cors = require("cors");
 const path = require("path");
 
 const productsRouter = require("./routes/api/products");
@@ -11,6 +11,7 @@ const ordersRouter = require("./routes/api/orders");
 const authRouter = require("./routes/api/auth");
 const newPostRouter = require("./routes/api/newPost");
 const paymentsRouter = require("./routes/api/payments");
+const coursesRouter = require("./routes/api/courses");
 
 app.use(cors());
 app.use(express.json());
@@ -23,10 +24,11 @@ app.use("/api", ordersRouter);
 app.use("/api", authRouter);
 app.use("/api", newPostRouter);
 app.use("/api", paymentsRouter);
+app.use("/api", coursesRouter);
 
 app.use((err, req, res, next) => {
   const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  const message = err.message || "Internal Server Error";
 
   res.status(status).json({
     status: status,

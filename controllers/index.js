@@ -40,6 +40,7 @@ const {
 
 const { searchSettlements, getWarehouses } = require("./newPost");
 
+
 module.exports = {
   createProducts,
   getProductHandler,
@@ -71,6 +72,5 @@ module.exports = {
   searchSettlements,
   getWarehouses,
   getOrderById,
-  getPopularityProducts,
-  userFindById,
+  getPopularityProducts
 };
