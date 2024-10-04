@@ -1,26 +1,27 @@
-const db = require("../../db");
+const pool = require("../../db");
 
-const getPopularityProducts = (req, res) => {
-  const sql = `
-    SELECT p.id, p.title, p.popularity, 
-           (SELECT MIN(i.img_url) 
-            FROM imageUrls i 
-            WHERE i.product_id = p.id) AS image_url,
-           (SELECT MIN(v.price) 
-            FROM variations v 
-            WHERE v.product_id = p.id) AS price
-    FROM products p
-    ORDER BY p.popularity DESC
-  `;
+const getPopularityProducts = async (req, res) => {
+  try {
+    const [products] = await pool.execute(`
+      SELECT 
+        p.id, 
+        p.title, 
+        p.popularity, 
+        MIN(i.img_url) AS image_url, 
+        MIN(v.price) AS price
+      FROM products p
+      LEFT JOIN imageUrls i ON p.id = i.product_id
+      LEFT JOIN variations v ON p.id = v.product_id
+      GROUP BY p.id
+      ORDER BY p.popularity DESC
+      LIMIT 10;
+    `);
 
-  db.query(sql, (err, data) => {
-    if (err) {
-      return res
-        .status(500)
-        .json({ message: "Error retrieving popular products", error: err });
-    }
-    res.status(200).json(data.slice(0, 10));
-  });
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error retrieving popular products:", error);
+    res.status(500).json({ message: "Error retrieving popular products" });
+  }
 };
 
 module.exports = getPopularityProducts;

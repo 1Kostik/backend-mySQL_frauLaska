@@ -1,97 +1,89 @@
-const { getAllProducts, getCategoryIdByProductId } = require("./getAllProducts");
-const db = require("../../db");
+const {
+  getAllProducts,
+  getCategoryIdByProductId,
+} = require("./getAllProducts");
+const pool = require("../../db");
 
 const getCountProducts = async (categories, itemIds, search) => {
-  return new Promise(async (resolve, reject) => {
-    let totalProducts = 0;
-    const categoryItemsMap = {};
+  let totalProducts = 0;
+  const categoryItemsMap = {};
 
-    if (itemIds && itemIds.length > 0) {
-      for (const id of itemIds) {
-        const productId = Number(id);
-        try {
-          const categoryId = await getCategoryIdByProductId(productId);
-          if (categoryId) {
-            if (!categoryItemsMap[categoryId]) {
-              categoryItemsMap[categoryId] = [];
-            }
-            categoryItemsMap[categoryId].push(productId);
+  if (itemIds && itemIds.length > 0) {
+    for (const id of itemIds) {
+      const productId = Number(id);
+      try {
+        const categoryId = await getCategoryIdByProductId(productId);
+        if (categoryId) {
+          if (!categoryItemsMap[categoryId]) {
+            categoryItemsMap[categoryId] = [];
           }
-        } catch (err) {
-          return reject(err);
+          categoryItemsMap[categoryId].push(productId);
         }
+      } catch (err) {
+        throw err;
       }
     }
+  }
 
-    const queries = [];
-    const queryParams = [];
+  const queries = [];
+  const queryParamsList = [];
 
-    if (categories && categories.length > 0) {
-      categories.forEach((category, index) => {
-        const itemsForCategory = categoryItemsMap[category] || [];
-        if (itemsForCategory.length > 0) {
-          // Если есть конкретные товары для текущей категории
-          let sql = `
-            SELECT COUNT(*) AS total_products
-            FROM products
-            WHERE category_id = ? AND id IN (${itemsForCategory.map(() => '?').join(',')})
-          `;
-          if (search) {
-            search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
-            sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
-            queryParams.push(`%${search}%`);
-          }
-          queries.push(sql);
-          queryParams.push([Number(category), ...itemsForCategory.map(id => Number(id))]);
-        } else {
-          // Если нет конкретных товаров для текущей категории, выбираем все товары
-          let sql = `
-            SELECT COUNT(*) AS total_products
-            FROM products
-            WHERE category_id = ?
-          `;
-          if (search) {
-            search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
-            sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
-            queryParams.push(`%${search}%`);
-          }
-          queries.push(sql);
-          queryParams.push([Number(category)]);
-        }
-      });
-    } else {
-      // Если категории не указаны, выбираем все продукты
-      let sql = `
-        SELECT COUNT(*) AS total_products
-        FROM products
-        WHERE 1=1
-      `;
+  if (categories && categories.length > 0) {
+    categories.forEach((category) => {
+      const itemsForCategory = categoryItemsMap[category] || [];
+      let sql = `SELECT COUNT(*) AS total_products FROM products WHERE category_id = ?`;
+      const queryParams = [Number(category)];
+
+      if (itemsForCategory.length > 0) {
+        sql += ` AND id IN (${itemsForCategory.map(() => "?").join(",")})`;
+        queryParams.push(...itemsForCategory.map((id) => Number(id)));
+      }
+
       if (search) {
-        search = search.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
+        search = search
+          .toLowerCase()
+          .replace(/_/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
         sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
         queryParams.push(`%${search}%`);
       }
+
       queries.push(sql);
+      queryParamsList.push(queryParams);
+    });
+  } else {
+    let sql = `SELECT COUNT(*) AS total_products FROM products WHERE 1=1`;
+    const queryParams = [];
+
+    if (search) {
+      search = search
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      sql += ` AND LOWER(REPLACE(REPLACE(title, '  ', ' '), '  ', ' ')) LIKE ?`;
+      queryParams.push(`%${search}%`);
     }
 
-    try {
-      const results = await Promise.all(
-        queries.map((query, index) => 
-          new Promise((resolve, reject) => {
-            db.query(query, queryParams[index], (err, result) => {
-              if (err) return reject(err);
-              resolve(result[0].total_products);
-            });
-          })
-        )
-      );
+    queries.push(sql);
+    queryParamsList.push(queryParams);
+  }
 
-      totalProducts = results.reduce((sum, count) => sum + count, 0);
-      resolve([{ total_products: totalProducts }]);
-    } catch (err) {
-      reject(err);
-    }
-  });
+  try {
+    const results = await Promise.all(
+      queries.map((query, index) => pool.query(query, queryParamsList[index]))
+    );
+
+    totalProducts = results.reduce(
+      (sum, result) => sum + result[0][0].total_products,
+      0
+    );
+
+    return [{ total_products: totalProducts }];
+  } catch (err) {
+    throw err;
+  }
 };
 
 const getAllProductsHandler = async (req, res, next) => {
@@ -129,10 +121,11 @@ const getAllProductsHandler = async (req, res, next) => {
       limit,
       page
     );
-    const totalProducts = await getCountProducts(categories,itemIds,search);
+
+    const totalProducts = await getCountProducts(categories, itemIds, search);
     const total_products = totalProducts[0].total_products;
 
-    res.json({ productData, total_products});
+    res.json({ productData, total_products });
   } catch (error) {
     console.error("Error fetching products:", error);
     res.status(500).json({ error: "Internal server error" });

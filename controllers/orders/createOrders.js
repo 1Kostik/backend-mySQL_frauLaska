@@ -1,13 +1,16 @@
-const db = require("../../db");
+const pool = require("../../db");
 
 const { getProduct } = require("../products");
 const getOrderById = require("./getOrdersById");
-const { decreaseVariationCount, increasePopularity } = require("../products/updateProducts");
+const {
+  decreaseVariationCount,
+  increasePopularity,
+} = require("../products/updateProducts");
 
 const sendEmail = require("../../services/sendMail");
 const sendTelegramNotification = require("../../services/sendTelegramNotification");
 
-const saveTableDataOrders = (
+const saveTableDataOrders = async (
   tableName,
   status,
   payment_status,
@@ -28,101 +31,87 @@ const saveTableDataOrders = (
   columns,
   valueMapper
 ) => {
-  return new Promise(async (resolve, reject) => {
-    const values = valueMapper({
-      status,
-      payment_status,
-      payment_method,
-      delivery_type,
-      delivery_city,
-      delivery_destination,
-      total_amount,
-      order_date,
-      name,
-      last_name,
-      email,
-      phone,
-      recipient_name,
-      recipient_last_name,
-      recipient_phone,
-      call_me_back,
-    });
-
-    if (!Array.isArray(values) || values.length === 0) {
-      return reject(new Error("Values must be a non-empty array"));
-    }
-
-    const query = `INSERT INTO ${tableName} (${columns.join(
-      ", "
-    )}) VALUES (${values.map(() => "?").join(", ")})`;
-
-    try {
-      const result = await new Promise((resolve, reject) => {
-        db.query(query, values, (error, result) => {
-          if (error) {
-            console.error("Error during database operation", error);
-            return reject(new Error("Database operation failed"));
-          }
-          resolve(result);
-        });
-      });
-
-      resolve(result.insertId);
-    } catch (error) {
-      console.error("Error during database operation", error);
-      reject(new Error("Database operation failed"));
-    }
+  const values = valueMapper({
+    status,
+    payment_status,
+    payment_method,
+    delivery_type,
+    delivery_city,
+    delivery_destination,
+    total_amount,
+    order_date,
+    name,
+    last_name,
+    email,
+    phone,
+    recipient_name,
+    recipient_last_name,
+    recipient_phone,
+    call_me_back,
   });
+
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new Error("Values must be a non-empty array");
+  }
+
+  const query = `INSERT INTO ${tableName} (${columns.join(
+    ", "
+  )}) VALUES (${values.map(() => "?").join(", ")})`;
+
+  try {
+    const [result] = await pool.execute(query, values);
+    return result.insertId;
+  } catch (error) {
+    console.error("Error during database operation", error);
+    throw new Error("Database operation failed");
+  }
 };
 
-const saveTableDataOrderItems = (
+const saveTableDataOrderItems = async (
   tableName,
   data,
   orderId,
   columns,
   mapFunc
 ) => {
-  return new Promise(async (resolve, reject) => {
-    if (!Array.isArray(data) || data.length === 0) {
-      return reject(`No ${tableName} to insert`);
-    }
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error(`No ${tableName} to insert`);
+  }
 
-    const filteredData = data.filter((item) =>
-      Object.values(item).some(
-        (value) => value !== undefined && value !== null && value !== ""
-      )
-    );
+  const filteredData = data.filter((item) =>
+    Object.values(item).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
+  );
 
-    if (filteredData.length === 0) {
-      return reject(`No ${tableName} to insert after filtering empty fields`);
-    }
+  if (filteredData.length === 0) {
+    throw new Error(`No ${tableName} to insert after filtering empty fields`);
+  }
 
-    const values = filteredData.map((item) => {
-      const mappedValues = mapFunc(item);
-      return [...mappedValues, orderId]; // Добавляем orderId к значениям
-    });
-
-    if (!Array.isArray(values) || values.length === 0) {
-      return reject(`Values for ${tableName} must be a non-empty array`);
-    }
-
-    const placeholders = values
-      .map(() => `(${columns.map(() => "?").join(", ")}, ?)`) // Изменение здесь
-      .join(", ");
-    const flattenedValues = values.flat();
-
-    const query = `INSERT INTO ${tableName} (${columns.join(
-      ", "
-    )}, orders_items_id) VALUES ${placeholders}`; // Добавляем orders_items_id в запрос
-
-    try {
-      await db.query(query, flattenedValues);
-      resolve();
-    } catch (error) {
-      console.error(`Error during inserting into ${tableName}`, error);
-      reject(new Error("Database operation failed"));
-    }
+  const values = filteredData.map((item) => {
+    const mappedValues = mapFunc(item);
+    return [...mappedValues, orderId];
   });
+
+  if (!Array.isArray(values) || values.length === 0) {
+    throw new Error(`Values for ${tableName} must be a non-empty array`);
+  }
+
+  const placeholders = values
+    .map(() => `(${columns.map(() => "?").join(", ")}, ?)`)
+    .join(", ");
+  const flattenedValues = values.flat();
+
+  const query = `INSERT INTO ${tableName} (${columns.join(
+    ", "
+  )}, orders_items_id) VALUES ${placeholders}`;
+
+  try {
+    await pool.execute(query, flattenedValues);
+  } catch (error) {
+    console.error(`Error during inserting into ${tableName}`, error);
+    throw new Error("Database operation failed");
+  }
 };
 
 const createOrders = async (req, res) => {
@@ -142,17 +131,11 @@ const createOrders = async (req, res) => {
     order_items: orderItems,
   } = req.body;
 
-  const pickedItems = async (orderItems) => {
-    const products = await Promise.all(
-      orderItems.map(async (item) => {
-        const product = await getProduct(item.product_id);
-        return product;
-      })
+  try {
+    const items = await Promise.all(
+      orderItems.map(async (item) => await getProduct(item.product_id))
     );
-    return products;
-  };
 
-  pickedItems(orderItems).then(async (items) => {
     const order_item_array = items.map((item, i) => {
       const { id, product_code, title } = item;
       const item_variation = item.variations.find(
@@ -162,9 +145,8 @@ const createOrders = async (req, res) => {
       );
 
       decreaseVariationCount(item_variation.id, orderItems[i].count);
+      increasePopularity(id);
 
-      increasePopularity(id)
-      
       const { price } = item_variation;
       const total_cost = price * orderItems[i].count;
 
@@ -179,9 +161,10 @@ const createOrders = async (req, res) => {
       };
     });
 
-    const total = order_item_array.reduce((acc, item) => {
-      return item.total_cost + acc;
-    }, 0);
+    const total = order_item_array.reduce(
+      (acc, item) => item.total_cost + acc,
+      0
+    );
 
     const date = new Date();
     const offset = date.getTimezoneOffset() * 60000;
@@ -196,100 +179,105 @@ const createOrders = async (req, res) => {
       order_items: order_item_array,
     };
     const { status, payment_status, total_amount, order_items } = order;
-    try {
-      const orderId = await saveTableDataOrders(
-        "orders",
-        status,
-        payment_status,
-        payment_method,
-        delivery_type,
-        delivery_city,
-        delivery_destination,
-        total_amount,
-        order_date,
-        name,
-        last_name,
-        email,
-        phone,
-        recipient_name,
-        recipient_last_name,
-        recipient_phone,
-        call_me_back,
-        [
-          "status",
-          "payment_status",
-          "payment_method",
-          "delivery_type",
-          "delivery_city",
-          "delivery_destination",
-          "total_amount",
-          "order_date",
-          "name",
-          "last_name",
-          "email",
-          "phone",
-          "recipient_name",
-          "recipient_last_name",
-          "recipient_phone",
-          "call_me_back",
-        ],
-        (item) => [
-          item.status,
-          item.payment_status,
-          item.payment_method,
-          item.delivery_type,
-          item.delivery_city,
-          item.delivery_destination,
-          item.total_amount,
-          item.order_date,
-          item.name,
-          item.last_name,
-          item.email,
-          item.phone,
-          item.recipient_name,
-          item.recipient_last_name,
-          item.recipient_phone,
-          item.call_me_back,
-        ]
-      );
 
-      await saveTableDataOrderItems(
-        "order_items",
-        order_items,
-        orderId,
-        [
-          "product_id",
-          "title",
-          "count",
-          "total_cost",
-          "color",
-          "size",
-          "product_code",
-        ],
-        (item) => [
-          item.product_id,
-          item.title,
-          item.count,
-          item.total_cost,
-          item.color,
-          item.size,
-          item.product_code,
-        ]
-      );
+    const deliveryCityValue = delivery_city ?? null;
+    const deliveryDestinationValue = delivery_destination ?? null;
+    const recipientNameValue = recipient_name ?? null;
+    const recipientLastNameValue = recipient_last_name ?? null;
+    const recipientPhoneValue = recipient_phone ?? null;
 
-      const order = await getOrderById(orderId);
+    const orderId = await saveTableDataOrders(
+      "orders",
+      status,
+      payment_status,
+      payment_method,
+      delivery_type,
+      deliveryCityValue,
+      deliveryDestinationValue,
+      total_amount,
+      order_date,
+      name,
+      last_name,
+      email,
+      phone,
+      recipientNameValue,
+      recipientLastNameValue,
+      recipientPhoneValue,
+      call_me_back,
+      [
+        "status",
+        "payment_status",
+        "payment_method",
+        "delivery_type",
+        "delivery_city",
+        "delivery_destination",
+        "total_amount",
+        "order_date",
+        "name",
+        "last_name",
+        "email",
+        "phone",
+        "recipient_name",
+        "recipient_last_name",
+        "recipient_phone",
+        "call_me_back",
+      ],
+      (item) => [
+        item.status,
+        item.payment_status,
+        item.payment_method,
+        item.delivery_type,
+        item.delivery_city,
+        item.delivery_destination,
+        item.total_amount,
+        item.order_date,
+        item.name,
+        item.last_name,
+        item.email,
+        item.phone,
+        item.recipient_name,
+        item.recipient_last_name,
+        item.recipient_phone,
+        item.call_me_back,
+      ]
+    );
 
-      if (order.payment_method === "Накладний платіж") {
-        await sendEmail(order);
-        await sendTelegramNotification(order);
-      }
+    await saveTableDataOrderItems(
+      "order_items",
+      order_items,
+      orderId,
+      [
+        "product_id",
+        "title",
+        "count",
+        "total_cost",
+        "color",
+        "size",
+        "product_code",
+      ],
+      (item) => [
+        item.product_id,
+        item.title,
+        item.count,
+        item.total_cost,
+        item.color,
+        item.size,
+        item.product_code,
+      ]
+    );
 
-      res.status(201).json(order);
-    } catch (error) {
-      console.error("Ошибка при добавлении данных:", error);
-      res.status(500).send("Ошибка при добавлении данных");
+    const orderResult = await getOrderById(orderId);
+
+    if (orderResult.payment_method === "Накладний платіж") {
+      await sendEmail(orderResult);
+      await sendTelegramNotification(orderResult);
     }
-  });
+
+    res.status(201).json(orderResult);
+  } catch (error) {
+    console.error("Ошибка при добавлении данных:", error);
+    res.status(500).send("Ошибка при добавлении данных");
+  }
 };
 
 module.exports = createOrders;

@@ -1,5 +1,4 @@
-const db = require("../../db");
-const { getAllProducts } = require("./getAllProducts");
+const pool = require("../../db");
 const multer = require("multer");
 const cloudinary = require("../../cloudinaryConfig");
 const { getProduct } = require("./getProduct");
@@ -12,7 +11,6 @@ const saveTableProduct = async (data) => {
     category_id,
     title,
     description,
-    ranking,
     main_image,
     benefit,
     popularity,
@@ -37,11 +35,6 @@ const saveTableProduct = async (data) => {
   if (description) {
     columns.push("description");
     values.push(description);
-    placeholders.push("?");
-  }
-  if (ranking) {
-    columns.push("ranking");
-    values.push(ranking);
     placeholders.push("?");
   }
   if (main_image) {
@@ -74,41 +67,31 @@ const saveTableProduct = async (data) => {
     ", "
   )}) VALUES (${placeholders.join(", ")})`;
 
-  return new Promise((resolve, reject) => {
-    db.query(sql, values, (err, result) => {
-      if (err) {
-        return reject(err);
-      }
-      const product_id = result.insertId;
-      resolve(product_id);
-    });
-  });
+  const [result] = await pool.query(sql, values);
+  return result.insertId;
 };
 
-const saveTableData = async (table, product_id, data, columns, mapFunc) => {
-  return new Promise((resolve, reject) => {
-    if (!Array.isArray(data) || data.length === 0) {
-      return resolve(`No ${table} to insert`);
-    }
-    const filteredData = data.filter((item) =>
-      Object.values(item).some(
-        (value) => value !== undefined && value !== null && value !== ""
-      )
-    );
-    if (filteredData.length === 0) {
-      return resolve(`No ${table} to insert after filtering empty fields`);
-    }
-    const values = filteredData.map(mapFunc);
-    const sql = `INSERT INTO ${table} (product_id, ${columns.join(
-      ", "
-    )}) VALUES ?`;
-    db.query(sql, [values], (err, result) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(result);
-    });
-  });
+const saveTableData = async (table, data, columns, mapFunc) => {
+  if (!Array.isArray(data) || data.length === 0) {
+    return `No ${table} to insert`;
+  }
+
+  const filteredData = data.filter((item) =>
+    Object.values(item).some(
+      (value) => value !== undefined && value !== null && value !== ""
+    )
+  );
+
+  if (filteredData.length === 0) {
+    return `No ${table} to insert after filtering empty fields`;
+  }
+
+  const values = filteredData.map(mapFunc);
+  const sql = `INSERT INTO ${table} (product_id, ${columns.join(
+    ", "
+  )}) VALUES ?`;
+
+  await pool.query(sql, [values]);
 };
 
 const uploadImageToCloudinary = (file, folder) => {
@@ -137,7 +120,6 @@ const createProducts = async (req, res, next) => {
     category_id,
     title,
     description,
-    ranking,
     benefit,
     main_image,
     popularity,
@@ -154,54 +136,47 @@ const createProducts = async (req, res, next) => {
     const uploadPromises = imageFiles.map((file) =>
       uploadImageToCloudinary(file, folder)
     );
+
     const imageUrls = await Promise.all(uploadPromises);
+
     const mainImageLink = imageUrls.find((link) => link.includes(main_image));
 
     const productData = {
       category_id,
       title,
       description,
-      ranking: ranking === "" ? undefined : ranking,
       main_image: mainImageLink,
       benefit,
-      popularity: popularity === "" ? undefined : ranking,
+      popularity: popularity === "" ? undefined : popularity,
       product_code,
       composition,
     };
-console.log('productData', productData)
+
     const product_id = await saveTableProduct(productData);
 
-    // Сохранение изображений, вариаций и отзывов
-    await saveTableData(
-      "imageUrls",
+    await saveTableData("imageUrls", imageUrls, ["img_url"], (url) => [
       product_id,
-      imageUrls,
-      ["img_url"],
-      (url) => [product_id, url]
-    );
+      url,
+    ]);
     await saveTableData(
       "variations",
-      product_id,
       variations,
       ["price", "discount", "count", "color", "size"],
       (item) => [
         product_id,
         item.price,
-        item.discount === "" ? undefined : item.discount,
+        item.discount === "" ? null : item.discount,
         item.count === "" ? undefined : item.count,
-        item.color === "" ? undefined : item.color,
-        item.size === "" ? undefined : item.size,
+        item.color === "" ? null : item.color,
+        item.size === "" ? null : item.size,
       ]
     );
     await saveTableData(
       "feedbacks",
-      product_id,
       feedbacks,
       ["name", "profession", "review"],
       (item) => [product_id, item.name, item.profession, item.review]
     );
-
-    // Получение полного объекта данных о новом продукте
     const newProduct = await getProduct(product_id);
 
     res.status(201).json(newProduct);
