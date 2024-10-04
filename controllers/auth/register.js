@@ -1,16 +1,29 @@
-const { userFind } = require("./login");
-const bcrypt = require("bcrypt");
-const db = require("../../db");
+const bcrypt = require("bcryptjs");
+const pool = require("../../db");
 const { HttpError } = require("../../utils");
 
+const userFind = async ({ email }) => {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    return rows[0];
+  } catch (error) {
+    console.error("Error finding user by email:", error);
+    throw new HttpError(500, "Internal Server Error");
+  }
+};
+
 const createNewUser = async (name, email, password) => {
-  return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO users (name, email, password) VALUES (?, ?, ?)`;
-    db.query(sql, [name, email, password], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+  try {
+    await pool.execute(
+      "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+      [name, email, password]
+    );
+  } catch (error) {
+    console.error("Error creating new user:", error);
+    throw new HttpError(500, "Internal Server Error");
+  }
 };
 
 const register = async (req, res) => {

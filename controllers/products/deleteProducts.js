@@ -1,6 +1,5 @@
-const db = require("../../db");
+const pool = require("../../db");
 const cloudinary = require("../../cloudinaryConfig");
-
 const { getAllProducts } = require("./getAllProducts");
 
 const deleteProducts = async (req, res) => {
@@ -9,11 +8,18 @@ const deleteProducts = async (req, res) => {
   try {
     await deleteVariations(id);
     await deleteFeedbacks(id);
-    await deleteImageUrls(id);
+    const imageUrls = await deleteImageUrls(id);
     await deleteProduct(id);
 
-    const productData = await getAllProducts();
+    await Promise.all(
+      imageUrls.map((url) => {
+        const startIndex = url.indexOf("products");
+        const public_id = url.slice(startIndex).split(".")[0];
+        return cloudinary.uploader.destroy(public_id);
+      })
+    );
 
+    const productData = await getAllProducts();
     res.status(200).json(productData);
   } catch (error) {
     console.error("Error in /deleteProductData:", error);
@@ -23,73 +29,27 @@ const deleteProducts = async (req, res) => {
 
 const deleteProduct = async (id) => {
   const query = "DELETE FROM products WHERE id = ?";
-  return new Promise((resolve, reject) => {
-    db.query(query, [id], (err, result) => {
-      if (err) {
-        console.error("Error deleting product:", err);
-        return reject(err);
-      }
-      resolve(result);
-    });
-  });
+  await pool.query(query, [id]);
 };
 
 const deleteVariations = async (product_id) => {
   const query = "DELETE FROM variations WHERE product_id = ?";
-  return new Promise((resolve, reject) => {
-    db.query(query, [product_id], (err, result) => {
-      if (err) {
-        console.error("Error deleting variations:", err);
-        return reject(err);
-      }
-      resolve(result);
-    });
-  });
+  await pool.query(query, [product_id]);
 };
 
 const deleteFeedbacks = async (product_id) => {
   const query = "DELETE FROM feedbacks WHERE product_id = ?";
-  return new Promise((resolve, reject) => {
-    db.query(query, [product_id], (err, result) => {
-      if (err) {
-        console.error("Error deleting feedbacks:", err);
-        return reject(err);
-      }
-      resolve(result);
-    });
-  });
+  await pool.query(query, [product_id]);
 };
 
 const deleteImageUrls = async (product_id) => {
   const query = "SELECT img_url FROM imageUrls WHERE product_id = ?";
-  return new Promise((resolve, reject) => {
-    db.query(query, [product_id], async (err, rows) => {
-      if (err) {
-        console.error("Error selecting imageUrls:", err);
-        return reject(err);
-      }
+  const [rows] = await pool.query(query, [product_id]);
 
-      const deletePromises = rows.map(async (row) => {
-        const startIndex = row.img_url.indexOf("products");
-        let result = row.img_url.slice(startIndex);
+  const deleteQuery = "DELETE FROM imageUrls WHERE product_id = ?";
+  await pool.query(deleteQuery, [product_id]);
 
-        const public_id = result.split(".")[0];
-
-        await cloudinary.uploader.destroy(public_id);
-      });
-
-      await Promise.all(deletePromises);
-
-      const deleteQuery = "DELETE FROM imageUrls WHERE product_id = ?";
-      db.query(deleteQuery, [product_id], (err, result) => {
-        if (err) {
-          console.error("Error deleting imageUrls:", err);
-          return reject(err);
-        }
-        resolve(result);
-      });
-    });
-  });
+  return rows.map((row) => row.img_url);
 };
 
 module.exports = deleteProducts;

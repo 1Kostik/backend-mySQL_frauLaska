@@ -1,38 +1,38 @@
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const db = require("../../db");
+const bcrypt = require("bcryptjs");
+const pool = require("../../db");
 const { SECRET_KEY } = process.env;
 const { HttpError } = require("../../utils");
 
 const userFindById = async (id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM users WHERE id=?`;
-    db.query(sql, [id], (err, data) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(data[0]);
-    });
-  });
+  try {
+    const [rows] = await pool.execute("SELECT * FROM users WHERE id = ?", [id]);
+    return rows[0];
+  } catch (error) {
+    console.error("Error finding user by ID:", error);
+    throw new HttpError(500, "Internal Server Error");
+  }
 };
+
 const userFind = async ({ email }) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM users WHERE email = ?`;
-    db.query(sql, [email], (err, data) => {
-      if (err) return reject(err);
-      resolve(data[0]);
-    });
-  });
+  try {
+    const [rows] = await pool.execute("SELECT * FROM users WHERE email = ?", [
+      email,
+    ]);
+    return rows[0];
+  } catch (error) {
+    console.error("Error finding user by email:", error);
+    throw new HttpError(500, "Internal Server Error");
+  }
 };
 
 const userFindAndUpdateToken = async (id, token) => {
-  return new Promise((resolve, reject) => {
-    const sql = `UPDATE users SET token = ? WHERE id = ?`;
-    db.query(sql, [token, id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+  try {
+    await pool.execute("UPDATE users SET token = ? WHERE id = ?", [token, id]);
+  } catch (error) {
+    console.error("Error updating user token:", error);
+    throw new HttpError(500, "Internal Server Error");
+  }
 };
 
 const login = async (req, res, next) => {
@@ -52,6 +52,7 @@ const login = async (req, res, next) => {
 
     const payload = { id: user.id };
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "3h" });
+
     await userFindAndUpdateToken(user.id, token);
 
     res.json({

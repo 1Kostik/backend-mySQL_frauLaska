@@ -1,22 +1,26 @@
-const db = require("../../db");
+const pool = require("../../db");
 
 const getProduct = async (id) => {
   try {
-    // Получаем основной продукт
     const product = await fetchProduct(id);
     if (product.length === 0) {
       throw new Error("Product not found");
     }
 
-    // Получаем изображения, вариации и отзывы
     const images = await getImages(id);
     const variations = await getVariations(id);
     const feedbacks = await getFeedbacks(id);
 
-    // Формируем полный объект данных
     const productData = {
       ...product[0],
-      imageUrls: images,
+      imageUrls: [
+        ...images.filter((item) =>
+          item.img_url.includes(product[0].main_image)
+        ),
+        ...images.filter(
+          (item) => !item.img_url.includes(product[0].main_image)
+        ),
+      ],
       variations,
       feedbacks,
     };
@@ -27,53 +31,34 @@ const getProduct = async (id) => {
   }
 };
 
-const fetchProduct = (id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT * FROM products WHERE id = ?`;
-    db.query(sql, [id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+const fetchProduct = async (id) => {
+  const sql = `SELECT * FROM products WHERE id = ?`;
+  const [data] = await pool.query(sql, [id]);
+  return data;
 };
 
-const getImages = (product_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT img_url, id FROM imageUrls WHERE product_id = ?`;
-    db.query(sql, [product_id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+const getImages = async (product_id) => {
+  const sql = `SELECT img_url, id FROM imageUrls WHERE product_id = ?`;
+  const [data] = await pool.query(sql, [product_id]);
+  return data;
 };
 
-const getMainImage = (product_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT main_image FROM products WHERE id = ?`;
-    db.query(sql, [product_id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data[0].main_image);
-    });
-  });
+const getMainImage = async (product_id) => {
+  const sql = `SELECT main_image FROM products WHERE id = ?`;
+  const [[data]] = await pool.query(sql, [product_id]);
+  return data.main_image;
 };
 
-const getVariations = (product_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT id, price, discount, count, color, size FROM variations WHERE product_id = ?`;
-    db.query(sql, [product_id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+const getVariations = async (product_id) => {
+  const sql = `SELECT id, price, discount, count, color, size FROM variations WHERE product_id = ?`;
+  const [data] = await pool.query(sql, [product_id]);
+  return data;
 };
 
-const getFeedbacks = (product_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `SELECT id, name, profession, review FROM feedbacks WHERE product_id = ?`;
-    db.query(sql, [product_id], (err, data) => {
-      if (err) return reject(err);
-      resolve(data);
-    });
-  });
+const getFeedbacks = async (product_id) => {
+  const sql = `SELECT id, name, profession, review FROM feedbacks WHERE product_id = ?`;
+  const [data] = await pool.query(sql, [product_id]);
+  return data;
 };
+
 module.exports = { getProduct, getMainImage, getImages };

@@ -3,7 +3,7 @@ const { updatePaymentStatus } = require("./updateOrder");
 const changePaymentStatus = async (req, res) => {
   const { id } = req.params;
   try {
-    await updatePaymentStatus(id, "Оплачено");
+    await updatePaymentStatus(id, "Сплачено");
 
     return res
       .status(200)

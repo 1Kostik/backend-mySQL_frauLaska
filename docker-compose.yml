@@ -1,0 +1,56 @@
+# version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.2
+    container_name: MySQL-8.2
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: frauLaska
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./data/frauLaska.sql:/docker-entrypoint-initdb.d/frauLaska.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - backend_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: MySQL-8.2
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ""  # Убедитесь, что здесь задан пароль, если он есть
+    ports:
+      - "8080:80"
+    networks:
+      - backend_network
+
+  backend:
+    image: backend
+    container_name: backend
+    ports:
+      - "8081:8081"
+    environment:
+      DATABASE_HOST: MySQL-8.2
+      DATABASE_USER: root
+      DATABASE_PASSWORD: ""  # Убедитесь, что здесь задан пароль, если он есть
+      DATABASE_NAME: frauLaska
+    networks:
+      - backend_network
+
+  frontend:
+    image: frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    networks:
+      - backend_network
+
+volumes:
+  mysql_data:  # Исправлено на mysql_data для согласованности
+
+networks:
+  backend_network:

@@ -1,23 +1,21 @@
-const db = require("../../db");
+const pool = require("../../db");
 
-const deleteOrderItemsByOrderNumber = (orders_items_id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `DELETE FROM order_items WHERE orders_items_id = ?`;
-    db.query(sql, [orders_items_id], (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
-    });
-  });
+const deleteOrderItemsByOrderNumber = async (orders_items_id) => {
+  try {
+    await pool.execute('DELETE FROM order_items WHERE orders_items_id = ?', [orders_items_id]);
+    return true; 
+  } catch (error) {
+    throw error;
+  }
 };
 
-const deleteOrderByNumber = (id) => {
-  return new Promise((resolve, reject) => {
-    const sql = `DELETE FROM orders WHERE id = ?`;
-    db.query(sql, [id], (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
-    });
-  });
+const deleteOrderByNumber = async (id) => {
+  try {
+    const [result] = await pool.execute('DELETE FROM orders WHERE id = ?', [id]);
+    return result.affectedRows > 0;
+  } catch (error) {
+    throw error;
+  }
 };
 
 const deleteOrder = async (req, res) => {
@@ -25,8 +23,8 @@ const deleteOrder = async (req, res) => {
   try {
     await deleteOrderItemsByOrderNumber(id);
 
-    const result = await deleteOrderByNumber(id);
-    if (result.affectedRows === 0) {
+    const isDeleted = await deleteOrderByNumber(id);
+    if (!isDeleted) {
       return res.status(404).send("Заказ не найден");
     }
     res.status(200).send("Заказ успешно удален");

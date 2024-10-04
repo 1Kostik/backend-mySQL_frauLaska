@@ -54,8 +54,6 @@ const liqpayCallback = async (req, res) => {
       } = decodedData;
 
       if (paymentStatus === "success") {
-        console.log(`Платіж успішно завершено для замовлення: ${orderId}`);
-
         sendingReceipt(orderId, email, payment_id);
 
         const orderIdNumber = (orderId) => {

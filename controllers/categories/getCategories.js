@@ -1,10 +1,8 @@
-const db = require("../../db");
+const pool = require("../../db");
 
 const getCategories = async (req, res, next) => {
   try {
-    const sql = `SELECT * FROM categories`;
-
-    const categories = await executeQuery(sql);
+    const [categories] = await pool.execute('SELECT * FROM categories');
 
     res.status(200).json(categories);
   } catch (error) {
@@ -13,12 +11,4 @@ const getCategories = async (req, res, next) => {
   }
 };
 
-const executeQuery = (sql) => {
-  return new Promise((resolve, reject) => {
-    db.query(sql, (err, result) => {
-      if (err) return reject(err);
-      resolve(result);
-    });
-  });
-};
 module.exports = getCategories;
