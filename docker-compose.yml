@@ -1,6 +1,22 @@
-# version: "3.8"
+networks:
+  backend_network:
 
 services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+     
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - backend
+      - frontend
+      - mysql
+      - phpmyadmin
+    networks:
+      - backend_network
+
   mysql:
     image: mysql:8.2
     container_name: MySQL-8.2
@@ -9,9 +25,7 @@ services:
       MYSQL_DATABASE: frauLaska
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./data/frauLaska.sql:/docker-entrypoint-initdb.d/frauLaska.sql
-    ports:
-      - "3306:3306"
+      - ./data/frauLaska.sql:/docker-entrypoint-initdb.d/frauLaska.sql   
     networks:
       - backend_network
 
@@ -22,35 +36,28 @@ services:
       PMA_HOST: MySQL-8.2
       PMA_PORT: 3306
       PMA_USER: root
-      PMA_PASSWORD: ""  # Убедитесь, что здесь задан пароль, если он есть
-    ports:
-      - "8080:80"
+      PMA_PASSWORD: ""  
     networks:
       - backend_network
 
   backend:
     image: backend
-    container_name: backend
-    ports:
-      - "8081:8081"
+    container_name: backend    
     environment:
       DATABASE_HOST: MySQL-8.2
       DATABASE_USER: root
-      DATABASE_PASSWORD: ""  # Убедитесь, что здесь задан пароль, если он есть
+      DATABASE_PASSWORD: ""
       DATABASE_NAME: frauLaska
     networks:
       - backend_network
 
   frontend:
     image: frontend
-    container_name: frontend
-    ports:
-      - "3000:80"
+    container_name: frontend   
+    environment:
+      - REACT_APP_API_URL=https://helthyfun.space/api/
     networks:
       - backend_network
 
 volumes:
-  mysql_data:  # Исправлено на mysql_data для согласованности
-
-networks:
-  backend_network:
+  mysql_data:

@@ -16,7 +16,7 @@ const coursesRouter = require("./routes/api/courses");
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/publick", express.static(path.join(__dirname, "publick")));
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 app.use("/api", productsRouter);
 app.use("/api", categoriesRouter);
