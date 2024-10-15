@@ -17,9 +17,9 @@ const makePayment = (req, res) => {
     version: 3,
     action: "pay",
     currency: "UAH",
-    result_url: `https://helthyfun.space/ordered?order_id=${id}&email=${email}`,
+    result_url: `http://localhost:3000/ordered?order_id=${id}&email=${email}`,
     server_url:
-      "https://helthyfun.space/api/liqpay-callback",
+      " https://5135-91-214-139-198.ngrok-free.app/api/liqpay-callback",
     description: `Оплата замовлення у магазині Frau Laska;\n Номер замовлення: ${id};\n ${titleHandler(
       order_items
     )}`,

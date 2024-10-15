@@ -49,15 +49,18 @@ const login = async (req, res, next) => {
     if (!passwordCompare) {
       return next(HttpError(401, "Email or password invalid!"));
     }
-
+    const expirationTimeInSeconds = 21600;
     const payload = { id: user.id };
-    const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "3h" });
+    const token = jwt.sign(payload, SECRET_KEY, {
+      expiresIn: `${expirationTimeInSeconds}s`,
+    });
 
     await userFindAndUpdateToken(user.id, token);
 
     res.json({
       token,
       name: user.name,
+      expirationTime: expirationTimeInSeconds,
     });
   } catch (error) {
     next(error);
