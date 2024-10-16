@@ -1,6 +1,6 @@
 const app = require("./app");
 
-const PORT = process.env.PORT;
+const PORT = process.env.NODE_PORT;
 
 app.set("port", PORT);
 
