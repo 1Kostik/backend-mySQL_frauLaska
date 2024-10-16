@@ -1,5 +1,6 @@
-FROM node:18-alpine AS build
-COPY package*.json ./
-RUN npm install
+FROM node:18.18.0
+WORKDIR /app
 COPY . .
-CMD ["npm", "start"]
+RUN npm install
+EXPOSE 4000
+CMD ["node", "server.js"]
