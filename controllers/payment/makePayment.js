@@ -17,9 +17,8 @@ const makePayment = (req, res) => {
     version: 3,
     action: "pay",
     currency: "UAH",
-    result_url: `http://localhost:3000/ordered?order_id=${id}&email=${email}`,
-    server_url:
-      " https://5135-91-214-139-198.ngrok-free.app/api/liqpay-callback",
+    result_url: `https://perunitsa.com/ordered?order_id=${id}&email=${email}`,
+    server_url: "https://perunitsa.com/api/liqpay-callback",
     description: `Оплата замовлення у магазині Frau Laska;\n Номер замовлення: ${id};\n ${titleHandler(
       order_items
     )}`,
