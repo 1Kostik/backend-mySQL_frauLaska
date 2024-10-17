@@ -5,22 +5,27 @@ const deleteCategories = async (req, res, next) => {
 
   try {
     const [products] = await pool.execute(
-      "SELECT product_id FROM products WHERE category_id = ?",
+      "SELECT id FROM products WHERE category_id = ?",
       [categoryId]
     );
 
-    const productIds = products.map((product) => product.product_id);
+    const productIds = products.map((product) => product.id);
 
     if (productIds.length > 0) {
-      await pool.execute("DELETE FROM imageUrls WHERE product_id IN (?)", [
-        productIds,
-      ]);
-      await pool.execute("DELETE FROM variations WHERE product_id IN (?)", [
-        productIds,
-      ]);
-      await pool.execute("DELETE FROM feedbacks WHERE product_id IN (?)", [
-        productIds,
-      ]);
+      const placeholders = productIds.map(() => "?").join(",");
+
+      await pool.execute(
+        `DELETE FROM imageUrls WHERE product_id IN (${placeholders})`,
+        productIds
+      );
+      await pool.execute(
+        `DELETE FROM variations WHERE product_id IN (${placeholders})`,
+        productIds
+      );
+      await pool.execute(
+        `DELETE FROM feedbacks WHERE product_id IN (${placeholders})`,
+        productIds
+      );
     }
 
     await pool.execute("DELETE FROM products WHERE category_id = ?", [
