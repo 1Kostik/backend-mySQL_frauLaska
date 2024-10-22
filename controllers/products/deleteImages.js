@@ -20,7 +20,7 @@ const deleteImageUrls = async (id) => {
 
   const deletePromises = rows.map(async (row) => {
     const startIndex = row.img_url.indexOf("products");
-    const public_id = row.img_url.slice(startIndex).split(".")[0];
+    const public_id = row.img_url.slice(startIndex).split(".")[0];    
     await cloudinary.uploader.destroy(public_id);
   });
 

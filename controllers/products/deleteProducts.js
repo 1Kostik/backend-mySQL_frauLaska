@@ -46,6 +46,12 @@ const deleteImageUrls = async (product_id) => {
   const query = "SELECT img_url FROM imageUrls WHERE product_id = ?";
   const [rows] = await pool.query(query, [product_id]);
 
+  const deletePromises = rows.map(async (row) => {
+    const startIndex = row.img_url.indexOf("products");
+    const public_id = row.img_url.slice(startIndex).split(".")[0];
+    await cloudinary.uploader.destroy(public_id);
+  });
+  await Promise.all(deletePromises);
   const deleteQuery = "DELETE FROM imageUrls WHERE product_id = ?";
   await pool.query(deleteQuery, [product_id]);
 
