@@ -169,10 +169,15 @@ const createOrders = async (req, res) => {
     );
 
     const date = new Date();
-    const offset = date.getTimezoneOffset() * 60000;
-    const order_date = new Date(date.getTime() - offset)
-      .toISOString()
-      .split(".")[0];
+    const order_date = date.toLocaleString('en-US', {
+        timeZone: 'Europe/Kyiv',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    }).replace(/, /g, ' ');
 
     const order = {
       status: "В очікуванні",
