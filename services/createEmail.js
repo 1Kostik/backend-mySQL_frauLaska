@@ -35,8 +35,8 @@ const createEmail = async (order) => {
           width="50px"
           height="40px"
           padding="10px 0 0 "
-          src="https://res.cloudinary.com/drwfk1ks0/image/upload/v1726242753/Logo_vow1le.png"
-          href="http://localhost:3000/"
+          src="https://res.cloudinary.com/dqbugqiwk/image/upload/v1729614158/fraulogo.png"
+          href="https://perunitsa.com/"
         />
       </mj-column>
       <mj-column padding-left="30px">
