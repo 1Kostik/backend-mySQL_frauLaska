@@ -168,16 +168,19 @@ const createOrders = async (req, res) => {
       0
     );
 
-    const date = new Date();
-    const order_date = date.toLocaleString('en-US', {
-        timeZone: 'Europe/Kyiv',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    }).replace(/, /g, ' ');
+    const now = new Date();
+    const order_date =
+      now.getFullYear() +
+      "-" +
+      String(now.getMonth() + 1).padStart(2, "0") +
+      "-" +
+      String(now.getDate()).padStart(2, "0") +
+      " " +
+      String(now.getHours()).padStart(2, "0") +
+      ":" +
+      String(now.getMinutes()).padStart(2, "0") +
+      ":" +
+      String(now.getSeconds()).padStart(2, "0");
 
     const order = {
       status: "В очікуванні",

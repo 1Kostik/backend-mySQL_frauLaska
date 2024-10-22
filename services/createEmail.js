@@ -60,7 +60,7 @@ const createEmail = async (order) => {
       <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
         <mj-text css-class="text">
           Оплата: <span>${
-            payment_method === "deliveryPayment"
+            payment_method === "Накладний платіж"
               ? "Післяплатою"
               : "Картою на сайті"
           }</span>
