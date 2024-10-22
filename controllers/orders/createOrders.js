@@ -158,6 +158,8 @@ const createOrders = async (req, res) => {
         color: orderItems[i].color,
         size: orderItems[i].size,
         count: orderItems[i].count,
+        full_price: orderItems[i].full_price,
+        discount: orderItems[i].discount,
       };
     });
 
@@ -254,6 +256,8 @@ const createOrders = async (req, res) => {
         "color",
         "size",
         "product_code",
+        "full_price",
+        "discount",
       ],
       (item) => [
         item.product_id,
@@ -263,6 +267,8 @@ const createOrders = async (req, res) => {
         item.color,
         item.size,
         item.product_code,
+        item.full_price,
+        item.discount ? item.discount : null,
       ]
     );
 
