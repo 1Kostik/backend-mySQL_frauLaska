@@ -1,31 +1,16 @@
-networks:
-  backend_network:
-
 services:
-  nginx:
-    image: nginx:stable-alpine
-    ports:
-      - "80:80"
-     
-    volumes:
-      - "./nginx.conf:/etc/nginx/nginx.conf"
-    depends_on:
-      - backend
-      - frontend
-      - mysql
-      - phpmyadmin
-    networks:
-      - backend_network
-
   mysql:
     image: mysql:8.2
-    container_name: MySQL-8.2
+    container_name: mysqlapp
     environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: frauLaska
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./data/frauLaska.sql:/docker-entrypoint-initdb.d/frauLaska.sql   
+    ports:
+      - "${DB_PORT}:3306"
     networks:
       - backend_network
 
@@ -33,31 +18,29 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
     environment:
-      PMA_HOST: MySQL-8.2
+      PMA_HOST: mysql
       PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: ""  
+      PMA_USER: ${DB_USER}
+      PMA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8082:80"
+    depends_on:
+      - mysql
     networks:
       - backend_network
 
-  backend:
-    image: backend
-    container_name: backend    
-    environment:
-      DATABASE_HOST: MySQL-8.2
-      DATABASE_USER: root
-      DATABASE_PASSWORD: ""
-      DATABASE_NAME: frauLaska
-    networks:
-      - backend_network
-
-  frontend:
-    image: frontend
-    container_name: frontend   
-    environment:
-      - REACT_APP_API_URL=https://helthyfun.space/api/
+  node-server:
+    build: .
+    container_name: node-server
+    ports:
+     - "4000:4000"
+    depends_on:
+      - mysql
     networks:
       - backend_network
 
 volumes:
   mysql_data:
+
+networks:
+  backend_network:
