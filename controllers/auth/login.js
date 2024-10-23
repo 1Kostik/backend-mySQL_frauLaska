@@ -49,7 +49,7 @@ const login = async (req, res, next) => {
     if (!passwordCompare) {
       return next(HttpError(401, "Email or password invalid!"));
     }
-    const expirationTimeInSeconds = 21600;
+    const expirationTimeInSeconds = 86400;
     const payload = { id: user.id };
     const token = jwt.sign(payload, SECRET_KEY, {
       expiresIn: `${expirationTimeInSeconds}s`,
