@@ -276,10 +276,10 @@ const createEmail = async (order) => {
       background-color="#171616"
     >
       <mj-column padding="0 0 15px">
-        <mj-text css-class="text" font-size="16px">+380637053806</mj-text>
+        <mj-text css-class="text" font-size="16px">+380(96)148-88-48</mj-text>
       </mj-column>
       <mj-column padding="0 0 15px">
-        <mj-text css-class="text" font-size="16px">lana@jar.com</mj-text>
+        <mj-text css-class="text" font-size="16px">Frau.association@gmail.com</mj-text>
       </mj-column>
     </mj-section>
   </mj-body>
