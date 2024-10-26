@@ -25,6 +25,7 @@ const {
   updateCategories,
   deleteCategories,
   getCategoriesProductCount,
+  getCheckedItems,
 } = require("./categories");
 const {
   createOrders,
@@ -75,4 +76,5 @@ module.exports = {
   getPopularityProducts,
   sendCoursesNotification,
   userFindById,
+  getCheckedItems
 };
