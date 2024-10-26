@@ -3,6 +3,7 @@ const getCategories = require("./getCategories");
 const updateCategories = require("./updateCategories");
 const deleteCategories = require("./deleteCategories");
 const getCategoriesProductCount = require("./getCategoriesProductCount");
+const getCheckedItems = require("./getCheckedItems");
 
 module.exports = {
   createCategories,
@@ -10,4 +11,5 @@ module.exports = {
   updateCategories,
   deleteCategories,
   getCategoriesProductCount,
+  getCheckedItems
 };
