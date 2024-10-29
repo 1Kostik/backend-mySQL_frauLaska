@@ -133,6 +133,14 @@ const createEmail = async (order) => {
     order_items.map(
       async ({ title, color, size, count, total_cost, product_id }) => {
         const mainImg = await getMainImage(product_id);
+        const unitType =
+          size && size.toString().replace(/[^a-zA-Zа-яА-ЯёЁ]/g, "");
+        const type =
+          unitType === "шт"
+            ? "Пакування"
+            : unitType === "гр"
+            ? "Вага"
+            : "Об'єм";
         return `<mj-section
       css-class="section"
       padding="15px 30px 0"
@@ -164,7 +172,7 @@ const createEmail = async (order) => {
                 ${
                   size
                     ? `<mj-text css-class="text" align="left">
-               <span>Об'єм:</span> ${size} мл
+               <span>${type}:</span> ${size}
               </mj-text>`
                     : `<mj-text css-class="text" align="left" padding="0">
                   <span style="display: inline-block; margin-right: 5px;"></span>
@@ -173,7 +181,7 @@ const createEmail = async (order) => {
             : `${
                 size
                   ? `<mj-text css-class="text" align="left">
-               <span>Об'єм:</span> ${size} мл
+               <span>${type}:</span> ${size}
               </mj-text>`
                   : `<mj-text css-class="text" align="left" padding="0">
                   <span style="display: inline-block; margin-right: 5px;"></span>
