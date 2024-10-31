@@ -137,7 +137,7 @@ const createEmail = async (order) => {
           size && size.toString().replace(/[^a-zA-Zа-яА-ЯёЁ]/g, "");
         const type =
           unitType === "шт"
-            ? "Пакування"
+            ? "Комплект"
             : unitType === "гр"
             ? "Вага"
             : "Об'єм";
