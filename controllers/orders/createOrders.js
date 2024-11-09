@@ -144,7 +144,7 @@ const createOrders = async (req, res) => {
           variation.color === orderItems[i].color
       );
 
-      decreaseVariationCount(item_variation.id, orderItems[i].count);
+      // decreaseVariationCount(item_variation.id, orderItems[i].count);
       increasePopularity(id);
 
       const { price } = item_variation;

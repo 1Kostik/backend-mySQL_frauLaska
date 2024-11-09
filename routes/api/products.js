@@ -34,8 +34,8 @@ router.patch(
   upload.array("imageUrls"),
   updateProducts
 );
-router.patch("/products/variations/increase/:id", increaseProductCount);
-router.patch("/products/variations/decrease/:id", decreaseProductCount);
+// router.patch("/products/variations/increase/:id", increaseProductCount);
+// router.patch("/products/variations/decrease/:id", decreaseProductCount);
 
 router.delete("/products/feedbacks/:id", authenticate, deleteFeedbacks);
 router.delete("/products/variations/:id", authenticate, deleteVariations);

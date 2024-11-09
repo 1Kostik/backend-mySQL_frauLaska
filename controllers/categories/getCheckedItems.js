@@ -2,7 +2,7 @@ const pool = require("../../db");
 
 const getCheckedItems = async (req, res, next) => {
   const idsArr = req.body.idsArr;
-  console.log(idsArr);
+
   try {
     const [rows] = await pool.execute(
       `

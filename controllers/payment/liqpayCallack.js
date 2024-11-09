@@ -23,9 +23,9 @@ const sendingReceipt = (order_id, email, payment_id) => {
       email,
       language: "uk",
     },
-    function (json) {
-      console.log("json.status", json);
-    }
+    // function (json) {
+    //   console.log("json.status", json);
+    // }
   );
 };
 
