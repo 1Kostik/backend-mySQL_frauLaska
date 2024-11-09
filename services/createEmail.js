@@ -136,11 +136,7 @@ const createEmail = async (order) => {
         const unitType =
           size && size.toString().replace(/[^a-zA-Zа-яА-ЯёЁ]/g, "");
         const type =
-          unitType === "шт"
-            ? "Комплект"
-            : unitType === "гр"
-            ? "Вага"
-            : "Об'єм";
+          unitType === "шт" ? "Комплект" : unitType === "гр" ? "Вага" : "Об'єм";
         return `<mj-section
       css-class="section"
       padding="15px 30px 0"

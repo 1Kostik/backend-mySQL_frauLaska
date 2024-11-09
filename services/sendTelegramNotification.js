@@ -4,7 +4,7 @@ const { TELEGRAM_TOKEN } = process.env;
 
 const sendTelegramNotification = async (order) => {
   const botToken = TELEGRAM_TOKEN;
-  const chatId = "491842033";
+  const chatId = "781097883";
   const telegramApiUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
   try {

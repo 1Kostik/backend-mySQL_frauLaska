@@ -31,10 +31,7 @@ const sendEmail = async (order) => {
   };
 
   try {
-    const result = await client.post("send", { version: "v3.1" }).request(data);
-    const { Status } = result.body.Messages[0];
-
-    console.log("Status", Status);
+    await client.post("send", { version: "v3.1" }).request(data);
   } catch (error) {
     console.error("Error sending email:", error);
   }
