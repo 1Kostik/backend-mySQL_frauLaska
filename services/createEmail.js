@@ -24,26 +24,23 @@ const createEmail = async (order) => {
     order_items,
   } = order;
 
-  const heroSectionHtml = `<mj-section
-      padding="10px 30px"
-      background-color="#171616"
-      border-bottom="15px solid #252525"
-    >
-      <mj-column>
+  const heroSectionHtml = `
+    <mj-section css-class="split-section">
+      <mj-column width="290px">
          <mj-image
+          css-class="logo"
           align="left"
           width="50px"
           height="40px"
-          padding="10px 0 0 "
           src="https://res.cloudinary.com/dqbugqiwk/image/upload/v1729614158/fraulogo.png"
           href="https://www.shop.fraulaska.com/"
         />
       </mj-column>
-      <mj-column padding-left="30px">
+      <mj-column  width="400px !important">
         <mj-text css-class="text">
           <span>${name} ${last_name}</span>, дякуємо за покупку
         </mj-text>
-        <mj-text css-class="text"> <span>Замовлення:</span> №${id} </mj-text>
+        <mj-text css-class="text" ><span>Замовлення:</span> № ${id}</mj-text>
         <mj-text css-class="text">
           <span>Оформлено:</span> ${format(order_date, "d MMMM yyyy 'р.' ", {
             locale: uk,
@@ -52,16 +49,11 @@ const createEmail = async (order) => {
       </mj-column>
     </mj-section>`;
 
-  const paymentHtml = `<mj-section
-      css-class="section"
-      padding="15px 30px 10px"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b7" width="270px" padding-bottom=${
-        payment_method === "paymentByRequisites" ? "79px" : "10px"
-      }>
-        <mj-text css-class="text">
-          Оплата: 
+  const paymentHtml = `
+    <mj-section css-class="section">
+      <mj-column width="290px">
+        <mj-text css-class="text title">
+          Оплата:
         </mj-text>
         <mj-text css-class="text">
         <span>${
@@ -71,22 +63,20 @@ const createEmail = async (order) => {
         }</span>
         </mj-text>
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b7" width="370px" padding-bottom=${
-        payment_method === "paymentByRequisites" ? "10px" : "33px"
-      }>
+      <mj-column width="400px">
        ${
          payment_method === "paymentByRequisites"
-           ? `<mj-text css-class="text">             
-                  Найменування отримувача: <span>ФОП Лотоцька Лана Сергіївна</span>             
-              </mj-text>             
-              <mj-text css-class="text">     
-                Код отримувача: <span>3196409941</span>                
+           ? `<mj-text css-class="text pay recipient">
+                  Найменування отримувача: <span>ФОП Лотоцька Лана Сергіївна</span>
               </mj-text>
-              <mj-text css-class="text">            
-                  Рахунок отримувача: <span>UA063052990000026009000403601</span>          
-              </mj-text>             
-              <mj-text css-class="text">             
-                 Назва банку: <span>АТ КБ "ПРИВАТБАНК"</span>              
+              <mj-text css-class="text">
+                Код отримувача: <span>3196409941</span>
+              </mj-text>
+              <mj-text css-class="text pay">
+                  Рахунок отримувача: <span>UA063052990000026009000403601</span>
+              </mj-text>
+              <mj-text css-class="text">
+                 Назва банку: <span>АТ КБ "ПРИВАТБАНК"</span>
               </mj-text>`
            : ``
        }
@@ -96,59 +86,51 @@ const createEmail = async (order) => {
       </mj-column>
     </mj-section>`;
 
-  const customerInfoHtml = `<mj-section
-      css-class="section"
-      padding="0px 30px 10px"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="56px">
-        <mj-text css-class="text"> Замовник </mj-text>
-      </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text" align="right"> <span>${name} ${last_name}</span> </mj-text>
-        <mj-text css-class="text" align="right"><span>${phone}</span> </mj-text>
-        <mj-text css-class="text" align="right"><span>${email}</span> </mj-text>
-      </mj-column>
-    </mj-section>`;
-
-  const receiverInfoHtml = `<mj-section
-      css-class="section"
-      padding="0px 30px 10px"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="33px">
-        <mj-text css-class="text"> Отримувач </mj-text>
-      </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text" align="right"> <span>${
-          recipient_name ? recipient_name : name
-        } ${
-    recipient_last_name ? recipient_last_name : last_name
-  }</span> </mj-text>
-        <mj-text css-class="text" align="right"><span>${
-          recipient_phone ? recipient_phone : phone
-        }</span> </mj-text>
-      </mj-column>
-    </mj-section>`;
-
-  const deliveryHtml = `<mj-section
-      css-class="section"
-      padding="0px 30px 15px"
-      background-color="#171616"
-      border-bottom="15px solid #252525"
-    >
+  const customerInfoHtml = `
+    <mj-section css-class="section">
       <mj-column>
-        <mj-text css-class="text">Адреса доставки</mj-text>
+        <mj-text css-class="text title">Замовник:</mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text css-class="text customer"><span>${name} ${last_name}</span></mj-text>
+        <mj-text css-class="text customer"><span>${phone}</span></mj-text>
+        <mj-text css-class="text customer"><span>${email}</span></mj-text>
+      </mj-column>
+    </mj-section>
+    `;
+
+  const receiverInfoHtml = `
+    <mj-section css-class="section">
+      <mj-column>
+        <mj-text css-class="text title">Отримувач:</mj-text>
+      </mj-column>
+      <mj-column>
+        <mj-text css-class="text customer">
+          <span>${recipient_name ? recipient_name : name} ${
+    recipient_last_name ? recipient_last_name : last_name
+  }</span></mj-text>
+        <mj-text css-class="text customer"><span>${
+          recipient_phone ? recipient_phone : phone
+        }</span></mj-text>
+      </mj-column>
+    </mj-section>
+    `;
+
+  const deliveryHtml = `
+    <mj-section css-class="split-section">
+      <mj-column>
+        <mj-text css-class="text title">Адреса доставки:</mj-text>
       </mj-column>
       <mj-column>
       ${
         delivery_type !== "Самовивіз"
-          ? `<mj-text css-class="text" align="right"><span>${delivery_city}</span></mj-text>
-        <mj-text css-class="text" align="right"><span>${delivery_destination}</span> </mj-text>`
-          : `<mj-text css-class="text" align="right"><span>Самовивіз</span> </mj-text>`
+          ? `<mj-text css-class="text customer"><span>${delivery_city}</span></mj-text>
+        <mj-text css-class="text customer"><span>${delivery_destination}</span></mj-text>`
+          : `<mj-text css-class="text customer"><span>Самовивіз</span></mj-text>`
       }
       </mj-column>
-    </mj-section>`;
+    </mj-section>
+    `;
 
   const orderedItemsHtml = await Promise.all(
     order_items.map(
@@ -158,31 +140,27 @@ const createEmail = async (order) => {
           size && size.toString().replace(/[^a-zA-Zа-яА-ЯёЁ]/g, "");
         const type =
           unitType === "шт" ? "Комплект" : unitType === "гр" ? "Вага" : "Об'єм";
-        return `<mj-section
-      css-class="section"
-      padding="15px 30px 0"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 10px 15px 0" width="60px">
+        return `
+        <mj-section css-class="section product">
+      <mj-column  width="70px">
         <mj-image
           align="center"
-          width="50px"
-          height="50px"
-          src="${mainImg}"
-          padding="0px"
-          border-radius="8px"
+          width="70px"
+          src=${mainImg}
+          padding="0"
+          border-radius="10px"
         />
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px" width="340px">
-        <mj-text css-class="text" align="left">${title}</mj-text>
-        <mj-text css-class="text" align="left">${
+      <mj-column width="390px">
+        <mj-text css-class="text product" align="left">${title}</mj-text>
+        <mj-text css-class="text product" align="left">${
           total_cost / count
         } грн × ${count} </mj-text>
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="0 0 19px" width="120px">
+      <mj-column  width="120px">
         ${
           color
-            ? `<mj-text css-class="text" align="left" padding="0">
+            ? `<mj-text css-class="text" align="left">
                   <span style="display: inline-block; margin-right: 5px;">Колір:</span>
                   <span style="background-color: ${color}; display: inline-block; width: 11px; height: 11px; border-radius: 50%;"/>
                </mj-text> 
@@ -192,7 +170,7 @@ const createEmail = async (order) => {
                <span>${type}:</span> ${size}
               </mj-text>`
                     : `<mj-text css-class="text" align="left" padding="0">
-                  <span style="display: inline-block; margin-right: 5px;"></span>
+                  <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
                 }`
             : `${
@@ -201,16 +179,16 @@ const createEmail = async (order) => {
                <span>${type}:</span> ${size}
               </mj-text>`
                   : `<mj-text css-class="text" align="left" padding="0">
-                  <span style="display: inline-block; margin-right: 5px;"></span>
+                  <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
               }<mj-text css-class="text" align="left" padding="0">
-                  <span style="display: inline-block; margin-right: 5px;"></span>
+                  <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
         }
         
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b770" padding="10px 0 32px" width="120px">
-        <mj-text css-class="text" align="right"> ${total_cost} грн </mj-text>
+      <mj-column  width="120px">
+        <mj-text css-class="text total" align="right">${total_cost} грн </mj-text>
       </mj-column>
     </mj-section>`;
       }
@@ -222,35 +200,23 @@ const createEmail = async (order) => {
   const deliveryPriceHtml =
     delivery_type === "Самовивіз"
       ? ``
-      : `<mj-section
-      css-class="section"
-      padding="15px 30px 0"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b7" padding="0 0 15px">
-        <mj-text css-class="text" align="center">
+      : `<mj-section css-class="section">
+      <mj-column>
+        <mj-text css-class="text">
           Доставка «Новою поштою»
         </mj-text>
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b7" padding="0 0 15px">
-        <mj-text css-class="text" align="right">
-          за тарифами перевізника
+      <mj-column>
+        <mj-text css-class="text delivery">
+          <span>за тарифами перевізника</span>
         </mj-text>
       </mj-column>
     </mj-section>`;
 
-  const totalAmountHtml = `<mj-section
-      css-class="section"
-      padding="15px 30px 10px"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="3px solid #b7b7b7" padding="0 0 15px ">
-        <mj-text
-          css-class="text total"
-          align="right"
-          font-size="18px"
-          font-weight="bold"
-        >
+  const totalAmountHtml = `
+    <mj-section css-class="section">
+      <mj-column>
+        <mj-text css-class="text total-amount" align="right">
           <span>Всього</span> ${total_amount} грн
         </mj-text>
       </mj-column>
@@ -266,12 +232,41 @@ const createEmail = async (order) => {
       name="Raleway"
       href="https://fonts.googleapis.com/css?family=Raleway"
     />
-    <mj-style inline="inline">
-      .text {padding: 5px !important} .text div {color: #d7d7d7 !important;
-      font-family: Helvetica !important;} .text span { color: #838383
-      !important; } .link a{ text-decoration: underline !important; }
-      .text.total span { padding-right: 10px !important; font-size: 14px; color:
-      #d7d7d7 !important} 
+    <mj-style >
+      .logo {padding: 0 15px 10px !important}
+      
+      .split-section {padding: 0 10px; background-color: #171616; border-bottom: 15px solid #252525}
+      .section {background-color: #171616; padding: 0 10px; border-bottom: 1px solid #b7b7b7}
+      .section.product {border-bottom: 1px solid #b7b7b740}
+      .section.last {border-bottom: none}
+         
+      .text {padding: 5px !important} 
+      .text div {color: #d7d7d7 !important; font-family: Helvetica !important; font-size: 12px !important} 
+      .text span { color: #838383 !important} 
+      .text.pay span {line-height: 20px}
+      .text.pay.recipient div {padding-right: 130px}
+      .title div {font-size: 14px !important}
+      .text.delivery span {text-align: left !important}
+      
+      .text.total div {font-size: 16px !important; color:	#d7d7d7 !important}  
+      .total-amount span, .total-amount div {font-size: 24px !important; font-weight: bold}
+      
+      .link a{ text-decoration: underline !important; }
+      
+      @media only screen and (min-width: 480px) {
+      .section {padding: 0 10px}
+      
+ 			.text div {font-size: 14px !important}
+      .text.pay span {line-height: 14px}
+      .text.pay.recipient div {padding-right: 0}
+      .text.customer div{text-align: right !important}
+      .text.delivery div {text-align: right !important}
+      .title div{font-size: 18px !important}
+      .total-amount div {font-size: 24px !important; 
+     			 font-weight: bold}
+      .product {padding-left: 10px !important}
+}
+      
     </mj-style>
   </mj-head>
 
@@ -281,13 +276,9 @@ const createEmail = async (order) => {
     ${customerInfoHtml}
     ${receiverInfoHtml}
     ${deliveryHtml}
-    <mj-section
-      css-class="section"
-      padding="15px 30px 0px"
-      background-color="#171616"
-    >
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text" font-size="18px" font-weight="bold">
+    <mj-section css-class="section">
+      <mj-column>
+        <mj-text css-class="text" font-size="20px !important" font-weight="bold">
           Замовлення
         </mj-text>
       </mj-column>
@@ -295,16 +286,12 @@ const createEmail = async (order) => {
     ${orderedItemsHtmlString}
     ${deliveryPriceHtml}
     ${totalAmountHtml}
-    <mj-section
-      css-class="section"
-      padding="15px 30px 10px"
-      background-color="#171616"
-    >
-      <mj-column padding="0 0 15px">
-        <mj-text css-class="text" font-size="16px">+380(96)148-88-48</mj-text>
+    <mj-section css-class="section last">
+      <mj-column>
+        <mj-text css-class="text title" align="center">+380(96)148-88-48</mj-text>
       </mj-column>
-      <mj-column padding="0 0 15px">
-        <mj-text css-class="text" font-size="16px">Frau.association@gmail.com</mj-text>
+      <mj-column> 
+        <mj-text css-class="text title" align="center">Frau.association@gmail.com</mj-text>
       </mj-column>
     </mj-section>
   </mj-body>
