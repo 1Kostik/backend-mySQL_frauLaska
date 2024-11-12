@@ -36,7 +36,7 @@ const createEmail = async (order) => {
           height="40px"
           padding="10px 0 0 "
           src="https://res.cloudinary.com/dqbugqiwk/image/upload/v1729614158/fraulogo.png"
-          href="https://perunitsa.com/"
+          href="https://www.shop.fraulaska.com/"
         />
       </mj-column>
       <mj-column padding-left="30px">
@@ -57,20 +57,41 @@ const createEmail = async (order) => {
       padding="15px 30px 10px"
       background-color="#171616"
     >
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
+      <mj-column border-bottom="1px solid #b7b7b7" width="270px" padding-bottom=${
+        payment_method === "paymentByRequisites" ? "79px" : "10px"
+      }>
         <mj-text css-class="text">
-          Оплата: <span>${
-            payment_method === "Накладний платіж"
-              ? "Післяплатою"
-              : "Картою на сайті"
-          }</span>
+          Оплата: 
+        </mj-text>
+        <mj-text css-class="text">
+        <span>${
+          payment_method === "Накладний платіж"
+            ? "Накладний платіж"
+            : "Переказ на банківський рахунок"
+        }</span>
         </mj-text>
       </mj-column>
-      <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text">
-         ${
-           payment_status === "Сплачено" ? "Сплачено:" : "Сума до сплати:"
-         }  <span>${total_amount} грн</span>
+      <mj-column border-bottom="1px solid #b7b7b7" width="370px" padding-bottom=${
+        payment_method === "paymentByRequisites" ? "10px" : "33px"
+      }>
+       ${
+         payment_method === "paymentByRequisites"
+           ? `<mj-text css-class="text">             
+                  Найменування отримувача: <span>ФОП Лотоцька Лана Сергіївна</span>             
+              </mj-text>             
+              <mj-text css-class="text">     
+                Код отримувача: <span>3196409941</span>                
+              </mj-text>
+              <mj-text css-class="text">            
+                  Рахунок отримувача: <span>UA063052990000026009000403601</span>          
+              </mj-text>             
+              <mj-text css-class="text">             
+                 Назва банку: <span>АТ КБ "ПРИВАТБАНК"</span>              
+              </mj-text>`
+           : ``
+       }
+        <mj-text css-class="text" align="right">
+         Сума до сплати:  <span>${total_amount} грн</span>
         </mj-text>
       </mj-column>
     </mj-section>`;
@@ -84,9 +105,9 @@ const createEmail = async (order) => {
         <mj-text css-class="text"> Замовник </mj-text>
       </mj-column>
       <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text"> <span>${name} ${last_name}</span> </mj-text>
-        <mj-text css-class="text"><span>${phone}</span> </mj-text>
-        <mj-text css-class="text"><span>${email}</span> </mj-text>
+        <mj-text css-class="text" align="right"> <span>${name} ${last_name}</span> </mj-text>
+        <mj-text css-class="text" align="right"><span>${phone}</span> </mj-text>
+        <mj-text css-class="text" align="right"><span>${email}</span> </mj-text>
       </mj-column>
     </mj-section>`;
 
@@ -99,12 +120,12 @@ const createEmail = async (order) => {
         <mj-text css-class="text"> Отримувач </mj-text>
       </mj-column>
       <mj-column border-bottom="1px solid #b7b7b7" padding-bottom="10px">
-        <mj-text css-class="text"> <span>${
+        <mj-text css-class="text" align="right"> <span>${
           recipient_name ? recipient_name : name
         } ${
     recipient_last_name ? recipient_last_name : last_name
   }</span> </mj-text>
-        <mj-text css-class="text"><span>${
+        <mj-text css-class="text" align="right"><span>${
           recipient_phone ? recipient_phone : phone
         }</span> </mj-text>
       </mj-column>
@@ -122,9 +143,9 @@ const createEmail = async (order) => {
       <mj-column>
       ${
         delivery_type !== "Самовивіз"
-          ? `<mj-text css-class="text"><span>${delivery_city}</span></mj-text>
-        <mj-text css-class="text"><span>${delivery_destination}</span> </mj-text>`
-          : `<mj-text css-class="text"><span>Самовивіз</span> </mj-text>`
+          ? `<mj-text css-class="text" align="right"><span>${delivery_city}</span></mj-text>
+        <mj-text css-class="text" align="right"><span>${delivery_destination}</span> </mj-text>`
+          : `<mj-text css-class="text" align="right"><span>Самовивіз</span> </mj-text>`
       }
       </mj-column>
     </mj-section>`;

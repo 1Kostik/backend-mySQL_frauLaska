@@ -281,11 +281,12 @@ const createOrders = async (req, res) => {
     );
 
     const orderResult = await getOrderById(orderId);
-
-    if (orderResult.payment_method === "Накладний платіж") {
-      await sendEmail(orderResult);
-      await sendTelegramNotification(orderResult);
-    }
+    await sendEmail(orderResult);
+    await sendTelegramNotification(orderResult);
+    // if (orderResult.payment_method === "Накладний платіж") {
+    //   await sendEmail(orderResult);
+    //   await sendTelegramNotification(orderResult);
+    // }
 
     res.status(201).json(orderResult);
   } catch (error) {
