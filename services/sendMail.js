@@ -9,12 +9,14 @@ const sendEmail = async (order) => {
   const { email, name, last_name, id } = order;
 
   const HTMLmail = await createEmail(order);
-
+  
   const data = {
     Messages: [
       {
         From: {
-          Email: "frau.association@gmail.com",
+          Email: "dmytro.balynets@gmail.com",
+          // Email: "dimside29@gmail.com",
+          // Email: "frau.association@gmail.com",
           Name: "Frau Laska",
         },
         To: [
