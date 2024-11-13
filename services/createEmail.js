@@ -142,46 +142,46 @@ const createEmail = async (order) => {
           unitType === "шт" ? "Комплект" : unitType === "гр" ? "Вага" : "Об'єм";
         return `
         <mj-section css-class="section product">
-      <mj-column  width="70px">
+      <mj-column  width="90px">
         <mj-image
-          align="center"
-          width="70px"
+          align="left"
+          width="90px"
           src=${mainImg}
-          padding="0"
+          padding="0 0 0 5px"
           border-radius="10px"
         />
       </mj-column>
-      <mj-column width="390px">
-        <mj-text css-class="text product" align="left">${title}</mj-text>
-        <mj-text css-class="text product" align="left">${
+      <mj-column width="370px">
+        <mj-text css-class="text description">${title}</mj-text>
+        <mj-text css-class="text description">${
           total_cost / count
         } грн × ${count} </mj-text>
       </mj-column>
       <mj-column  width="120px">
         ${
           color
-            ? `<mj-text css-class="text" align="left">
+            ? `<mj-text css-class="text variation">
                   <span style="display: inline-block; margin-right: 5px;">Колір:</span>
                   <span style="background-color: ${color}; display: inline-block; width: 11px; height: 11px; border-radius: 50%;"/>
                </mj-text> 
                 ${
                   size
-                    ? `<mj-text css-class="text" align="left">
+                    ? `<mj-text css-class="text variation">
                <span>${type}:</span> ${size}
               </mj-text>`
-                    : `<mj-text css-class="text" align="left" padding="0">
+                    : `<mj-text css-class="text variation" padding="0">
                   <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
                 }`
             : `${
                 size
-                  ? `<mj-text css-class="text" align="left">
+                  ? `<mj-text css-class="text variation">
                <span>${type}:</span> ${size}
               </mj-text>`
-                  : `<mj-text css-class="text" align="left" padding="0">
+                  : `<mj-text css-class="text variation" padding="0">
                   <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
-              }<mj-text css-class="text" align="left" padding="0">
+              }<mj-text css-class="text variation" padding="0">
                   <span style="display: inline-block; margin-right: 5px"/>
                </mj-text>`
         }
@@ -235,23 +235,27 @@ const createEmail = async (order) => {
     <mj-style >
       .logo {padding: 0 15px 10px !important}
       
-      .split-section {padding: 0 10px; background-color: #171616; border-bottom: 15px solid #252525}
-      .section {background-color: #171616; padding: 0 10px; border-bottom: 1px solid #b7b7b7}
-      .section.product {border-bottom: 1px solid #b7b7b740}
-      .section.last {border-bottom: none}
+      .split-section {padding: 0 10px; background-color: #171616; border-bottom: 15px 					solid #252525}
+      .section {background-color: #171616; padding: 0 10px; border-bottom: 1px solid 									#b7b7b7}
+      .section.product {border-bottom: 1px solid	#b7b7b720}
          
       .text {padding: 5px !important} 
-      .text div {color: #d7d7d7 !important; font-family: Helvetica !important; font-size: 12px !important} 
+      .text div {color: #d7d7d7 !important; font-family: Helvetica !important; 
+      	font-size: 12px !important} 
       .text span { color: #838383 !important} 
       .text.pay span {line-height: 20px}
-      .text.pay.recipient div {padding-right: 130px}
+      .text.pay.recipient div {padding-right: 119px}
       .title div {font-size: 14px !important}
       .text.delivery span {text-align: left !important}
       
-      .text.total div {font-size: 16px !important; color:	#d7d7d7 !important}  
-      .total-amount span, .total-amount div {font-size: 24px !important; font-weight: bold}
+      .text.total div {font-size: 16px !important; color:
+      	#d7d7d7 !important}  
+      .total-amount span, .total-amount div {font-size: 24px !important; 
+     			 font-weight: bold}
+      .text.description div, .text.variation div {text-align: right !important}
       
       .link a{ text-decoration: underline !important; }
+      
       
       @media only screen and (min-width: 480px) {
       .section {padding: 0 10px}
@@ -265,6 +269,8 @@ const createEmail = async (order) => {
       .total-amount div {font-size: 24px !important; 
      			 font-weight: bold}
       .product {padding-left: 10px !important}
+      .text.description div, .text.variation div {text-align: left !important}
+      .text.description div {padding-left: 10px}
 }
       
     </mj-style>
