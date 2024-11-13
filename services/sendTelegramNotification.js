@@ -25,7 +25,10 @@ const sendTelegramNotification = async (order) => {
       recipient_phone,
       call_me_back,
     } = order;
-
+    const type_payment =
+      payment_method && payment_method === "paymentByRequisites"
+        ? "Переказ на банківський рахунок"
+        : "Накладний платіж";
     const message = `Створено заказ номер: ${id}\n${name} ${last_name}\n${phone}\n${email}\n\n${
       recipient_name
         ? `Інший одержувач: ${recipient_name} ${recipient_last_name}\n${recipient_phone}\n\n`
@@ -34,7 +37,7 @@ const sendTelegramNotification = async (order) => {
       delivery_type === "Нова пошта"
         ? `Місто: ${delivery_city}\nАдреса: ${delivery_destination}\n`
         : ""
-    }\nСпосіб оплати: ${payment_method}\nСтатус оплати: ${payment_status}${
+    }\nСпосіб оплати: ${type_payment}\nСтатус оплати: ${payment_status}${
       call_me_back ? `\n\nПрохання передзвонити` : ""
     }`;
 
