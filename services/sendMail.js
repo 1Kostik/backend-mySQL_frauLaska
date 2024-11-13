@@ -14,9 +14,8 @@ const sendEmail = async (order) => {
     Messages: [
       {
         From: {
-          Email: "dmytro.balynets@gmail.com",
-          // Email: "dimside29@gmail.com",
-          // Email: "frau.association@gmail.com",
+          // Email: "dmytro.balynets@gmail.com",        
+          Email: "frau.association@gmail.com",
           Name: "Frau Laska",
         },
         To: [
